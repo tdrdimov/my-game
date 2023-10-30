@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { BasicCharacterController } from './controllers/CharacterController.js'
 
@@ -56,10 +55,6 @@ class CharacterControllerDemo {
 
     light = new THREE.AmbientLight(0xffffff, 0.25)
     this._scene.add(light)
-
-    const controls = new OrbitControls(this._camera, this._threejs.domElement)
-    controls.target.set(0, 10, 0)
-    controls.update()
 
     const plane = new THREE.Mesh(
       new THREE.PlaneGeometry(100, 100, 10, 10),

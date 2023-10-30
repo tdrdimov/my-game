@@ -39,6 +39,9 @@ export class WalkBackState extends State {
       this._parent.SetState('walk');
     } else if (!input._keys.forward && input._keys.backward) {
       this._parent.SetState('walk_back');
+      if (input._keys.space) {
+        this._parent.SetState('jump')
+      }
       return;
     } else {
       this._parent.SetState('idle');

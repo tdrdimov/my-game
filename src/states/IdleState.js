@@ -2,6 +2,7 @@ import { State } from './State.js'
 export class IdleState extends State {
   constructor(parent) {
     super(parent)
+    this._timer = 0;
   }
 
   get Name() {
@@ -25,13 +26,19 @@ export class IdleState extends State {
 
   Exit() {}
 
-  Update(_, input) {
+  Update(timeElapsed, input) {
     if (input._keys.forward) {
       this._parent.SetState('walk')
     } else if (input._keys.space) {
       this._parent.SetState('jump')
     } else if (input._keys.backward) {
       this._parent.SetState('walk_back')
+    } else {
+      // Check if it's time to transition to idle wait state
+      this._timer += timeElapsed;
+      if (this._timer >= 10) { // 10 seconds
+        this._parent.SetState('idleWait');
+      }
     }
   }
 }

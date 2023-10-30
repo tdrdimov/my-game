@@ -1,8 +1,8 @@
-import * as THREE from 'three';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
-import BasicCharacterControllerInput from '../inputs/BasicCharacterControllerInput.js';
-import { CharacterFSM } from '../states/StateMachine.js';
-
+import * as THREE from 'three'
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
+import BasicCharacterControllerInput from '../inputs/BasicCharacterControllerInput.js'
+import { CharacterFSM } from '../states/StateMachine.js'
+import CameraFollowController from './CameraController.js'
 class BasicCharacterControllerProxy {
   constructor(animations) {
     this._animations = animations
@@ -27,7 +27,7 @@ export class BasicCharacterController {
     this._animations = {}
     this._input = new BasicCharacterControllerInput()
     this._stateMachine = new CharacterFSM(new BasicCharacterControllerProxy(this._animations))
-
+    this.cameraController = {}
     this._LoadModels()
   }
 
@@ -42,6 +42,8 @@ export class BasicCharacterController {
 
       this._target = fbx
       this._params.scene.add(this._target)
+
+      this.cameraController = new CameraFollowController(this._params.camera, this._target)
 
       this._mixer = new THREE.AnimationMixer(this._target)
 
@@ -68,7 +70,7 @@ export class BasicCharacterController {
       loader.load('Run.fbx', (a) => {
         _OnLoad('run', a)
       })
-      loader.load('Idle.fbx', (a) => {
+      loader.load('BreathingIdle.fbx', (a) => {
         _OnLoad('idle', a)
       })
       loader.load('Jump.fbx', (a) => {
@@ -76,6 +78,9 @@ export class BasicCharacterController {
       })
       loader.load('Backward.fbx', (a) => {
         _OnLoad('walk_back', a)
+      })
+      loader.load('Idle.fbx', (a) => {
+        _OnLoad('idleWait', a)
       })
     })
   }
@@ -87,24 +92,18 @@ export class BasicCharacterController {
 
     this._stateMachine.Update(timeInSeconds, this._input)
 
-    // Update the camera's position to follow the character from behind
-    // const angle = this._target.rotation.y
-    // const x = Math.sin(angle)
-    // const z = Math.cos(angle)
-
-    // this._params.camera.position.x = this._target.position.x - x * 20
-    // this._params.camera.position.z = this._target.position.z - z * 22
-    // this._params.camera.position.y = this._target.position.y + 32 // Adjust the camera's height
-    // this._params.camera.lookAt(this._target)
-
     const velocity = this._velocity
+
+    // update camera 
+    this.cameraController.Update(timeInSeconds)
+
     const frameDecceleration = new THREE.Vector3(
       velocity.x * this._decceleration.x,
       velocity.y * this._decceleration.y,
       velocity.z * this._decceleration.z
     )
     frameDecceleration.multiplyScalar(timeInSeconds)
-    frameDecceleration.z =
+    frameDecceleration.z = 
       Math.sign(frameDecceleration.z) *
       Math.min(Math.abs(frameDecceleration.z), Math.abs(velocity.z))
 
@@ -156,7 +155,7 @@ export class BasicCharacterController {
 
     sideways.multiplyScalar(velocity.x * timeInSeconds)
     forward.multiplyScalar(velocity.z * timeInSeconds)
-
+    
     controlObject.position.add(forward)
     controlObject.position.add(sideways)
 
