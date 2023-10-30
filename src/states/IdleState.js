@@ -26,10 +26,12 @@ export class IdleState extends State {
   Exit() {}
 
   Update(_, input) {
-    if (input._keys.forward || input._keys.backward) {
+    if (input._keys.forward) {
       this._parent.SetState('walk')
     } else if (input._keys.space) {
       this._parent.SetState('jump')
+    } else if (input._keys.backward) {
+      this._parent.SetState('walk_back')
     }
   }
 }

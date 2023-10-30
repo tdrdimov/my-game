@@ -2,6 +2,7 @@ import { IdleState } from './IdleState.js';
 import { WalkState } from './WalkState.js';
 import { RunState } from './RunState.js';
 import { JumpState } from './JumpState.js';
+import { WalkBackState } from './WalkBackState.js';
 export class FiniteStateMachine {
   constructor() {
     this._states = {}
@@ -45,6 +46,7 @@ export class CharacterFSM extends FiniteStateMachine {
   _Init() {
     this._AddState('idle', IdleState)
     this._AddState('walk', WalkState)
+    this._AddState('walk_back', WalkBackState)
     this._AddState('run', RunState)
     this._AddState('jump', JumpState)
   }

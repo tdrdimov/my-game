@@ -34,11 +34,13 @@ export class WalkState extends State {
   Exit() {}
 
   Update(timeElapsed, input) {
-    if (input._keys.forward || input._keys.backward) {
+    if (input._keys.forward) {
       if (input._keys.shift) {
         this._parent.SetState('run')
       }
       return
+    } else if (input._keys.backward) {
+      this._parent.SetState('walk_back')
     }
 
     this._parent.SetState('idle')

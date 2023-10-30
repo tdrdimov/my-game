@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import BasicCharacterControllerInput from '../inputs/BasicCharacterControllerInput.js';
 import { CharacterFSM } from '../states/StateMachine.js';
@@ -74,6 +73,9 @@ export class BasicCharacterController {
       })
       loader.load('Jump.fbx', (a) => {
         _OnLoad('jump', a)
+      })
+      loader.load('Backward.fbx', (a) => {
+        _OnLoad('walk_back', a)
       })
     })
   }
