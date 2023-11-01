@@ -43,7 +43,7 @@ export class BasicCharacterController {
       this._target = fbx
       this._params.scene.add(this._target)
 
-      this.cameraController = new CameraFollowController(this._params.camera, this._target)
+      this.cameraController = new CameraFollowController(this._params.camera, this._target, this._params.renderer)
 
       this._mixer = new THREE.AnimationMixer(this._target)
 

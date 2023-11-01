@@ -4,7 +4,7 @@ import * as THREE from 'three'
 export class JumpState extends State {
   constructor(parent) {
     super(parent)
-
+    this.prevState = null
     this._FinishedCallback = () => {
       this._Finished()
     }
@@ -20,8 +20,9 @@ export class JumpState extends State {
     mixer.addEventListener('finished', this._FinishedCallback)
 
     if (prevState) {
+      this.prevState = prevState
       const prevAction = this._parent._proxy._animations[prevState.Name].action
-
+      
       curAction.reset()
       curAction.setLoop(THREE.LoopOnce, 1)
       curAction.clampWhenFinished = true
@@ -34,7 +35,7 @@ export class JumpState extends State {
 
   _Finished() {
     this._Cleanup()
-    this._parent.SetState('idle')
+    this._parent.SetState(this.prevState.Name)
   }
 
   _Cleanup() {
@@ -47,5 +48,5 @@ export class JumpState extends State {
     this._Cleanup()
   }
 
-  Update(_) {}
+  Update() {}
 }

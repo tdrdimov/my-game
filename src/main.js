@@ -1,8 +1,9 @@
 import * as THREE from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { BasicCharacterController } from './controllers/CharacterController.js'
+import BoxGenerator from './generators/BoxGenerator.js'
 
-class CharacterControllerDemo {
+class World {
   constructor() {
     this._Initialize()
   }
@@ -16,9 +17,9 @@ class CharacterControllerDemo {
     this._threejs.shadowMap.type = THREE.PCFSoftShadowMap
     this._threejs.setPixelRatio(window.devicePixelRatio)
     this._threejs.setSize(window.innerWidth, window.innerHeight)
-
+    
     document.body.appendChild(this._threejs.domElement)
-
+    
     window.addEventListener(
       'resize',
       () => {
@@ -35,6 +36,7 @@ class CharacterControllerDemo {
     this._camera.position.set(25, 10, 25)
 
     this._scene = new THREE.Scene()
+    this.boxGenerator = new BoxGenerator(this._scene)
 
     let light = new THREE.DirectionalLight(0xffffff, 1.0)
     light.position.set(-200, 200, 200)
@@ -53,11 +55,11 @@ class CharacterControllerDemo {
     light.shadow.camera.bottom = -50
     this._scene.add(light)
 
-    light = new THREE.AmbientLight(0xffffff, 0.25)
+    light = new THREE.AmbientLight(0xffffff, 2.25)
     this._scene.add(light)
 
     const plane = new THREE.Mesh(
-      new THREE.PlaneGeometry(100, 100, 10, 10),
+      new THREE.PlaneGeometry(200, 200, 20, 20),
       new THREE.MeshStandardMaterial({
         color: 0x808080
       })
@@ -67,6 +69,13 @@ class CharacterControllerDemo {
     plane.rotation.x = -Math.PI / 2
     this._scene.add(plane)
 
+
+    // Create boxes using the box generator
+    this.boxGenerator.createBox(0, 0, 0)
+    this.boxGenerator.createBox(20, 0, 0)
+    this.boxGenerator.createBox(40, 0, 0)
+    
+    
     this._mixers = []
     this._previousRAF = null
 
@@ -77,7 +86,8 @@ class CharacterControllerDemo {
   _LoadAnimatedModel() {
     const params = {
       camera: this._camera,
-      scene: this._scene
+      scene: this._scene,
+      renderer: this._threejs
     }
     this._controls = new BasicCharacterController(params)
   }
@@ -139,5 +149,5 @@ class CharacterControllerDemo {
 let _APP = null
 
 window.addEventListener('DOMContentLoaded', () => {
-  _APP = new CharacterControllerDemo()
+  _APP = new World()
 })
