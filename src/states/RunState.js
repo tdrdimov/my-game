@@ -23,7 +23,6 @@ export class RunState extends State {
         curAction.setEffectiveTimeScale(1.0)
         curAction.setEffectiveWeight(1.0)
       }
-
       curAction.crossFadeFrom(prevAction, 0.5, true)
       curAction.play()
     } else {

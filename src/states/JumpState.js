@@ -35,7 +35,7 @@ export class JumpState extends State {
 
   _Finished() {
     this._Cleanup()
-    this._parent.SetState(this.prevState.Name)
+    this._parent.SetState(this.prevState.Name);
   }
 
   _Cleanup() {

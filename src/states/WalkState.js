@@ -24,7 +24,7 @@ export class WalkState extends State {
         curAction.setEffectiveWeight(1.0)
       }
 
-      curAction.crossFadeFrom(prevAction, 0.5, true)
+      curAction.crossFadeFrom(prevAction, 0.4, true)
       curAction.play()
     } else {
       curAction.play()

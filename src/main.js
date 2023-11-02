@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { BasicCharacterController } from './controllers/CharacterController.js'
 import BoxGenerator from './generators/BoxGenerator.js'
+import * as CANNON from 'cannon'
 
 class World {
   constructor() {
@@ -17,9 +18,9 @@ class World {
     this._threejs.shadowMap.type = THREE.PCFSoftShadowMap
     this._threejs.setPixelRatio(window.devicePixelRatio)
     this._threejs.setSize(window.innerWidth, window.innerHeight)
-    
+
     document.body.appendChild(this._threejs.domElement)
-    
+
     window.addEventListener(
       'resize',
       () => {
@@ -34,9 +35,9 @@ class World {
     const far = 1000.0
     this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
     this._camera.position.set(25, 10, 25)
-
+    this.world = new CANNON.World()
     this._scene = new THREE.Scene()
-    this.boxGenerator = new BoxGenerator(this._scene)
+    this.boxGenerator = new BoxGenerator(this._scene, this.world)
 
     let light = new THREE.DirectionalLight(0xffffff, 1.0)
     light.position.set(-200, 200, 200)
@@ -69,13 +70,20 @@ class World {
     plane.rotation.x = -Math.PI / 2
     this._scene.add(plane)
 
+    
+    this.world.gravity.set(0, -9.81, 0)
+
+    const groundShape = new CANNON.Plane()
+    const groundBody = new CANNON.Body({ mass: 0 })
+    groundBody.addShape(groundShape)
+    groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2)
+    this.world.addBody(groundBody)
 
     // Create boxes using the box generator
     this.boxGenerator.createBox(0, 0, 0)
     this.boxGenerator.createBox(20, 0, 0)
     this.boxGenerator.createBox(40, 0, 0)
-    
-    
+      
     this._mixers = []
     this._previousRAF = null
 
@@ -127,7 +135,7 @@ class World {
       }
 
       this._RAF()
-
+      this.world.step(t);
       this._threejs.render(this._scene, this._camera)
       this._Step(t - this._previousRAF)
       this._previousRAF = t

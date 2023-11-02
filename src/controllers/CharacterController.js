@@ -3,6 +3,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import BasicCharacterControllerInput from '../inputs/BasicCharacterControllerInput.js'
 import { CharacterFSM } from '../states/StateMachine.js'
 import CameraFollowController from './CameraController.js'
+
 class BasicCharacterControllerProxy {
   constructor(animations) {
     this._animations = animations
@@ -63,7 +64,7 @@ export class BasicCharacterController {
       }
 
       const loader = new FBXLoader(this._manager)
-      loader.setPath('../models/')
+      loader.setPath('../animations/')
       loader.load('Walk.fbx', (a) => {
         _OnLoad('walk', a)
       })
