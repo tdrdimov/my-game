@@ -1,9 +1,11 @@
-import { IdleState } from './IdleState.js';
-import { WalkState } from './WalkState.js';
-import { RunState } from './RunState.js';
-import { JumpState } from './JumpState.js';
-import { WalkBackState } from './WalkBackState.js';
-import { IdleWaitState } from './IdleWaitState.js';
+import { IdleState } from './IdleState.js'
+import { WalkState } from './WalkState.js'
+import { RunState } from './RunState.js'
+import { JumpState } from './JumpState.js'
+import { WalkBackState } from './WalkBackState.js'
+import { IdleWaitState } from './IdleWaitState.js'
+import { RightState } from './RightState.js'
+import { LeftState } from './LeftState.js'
 export class FiniteStateMachine {
   constructor() {
     this._states = {}
@@ -25,7 +27,6 @@ export class FiniteStateMachine {
     }
 
     const state = new this._states[name](this)
-
     this._currentState = state
     state.Enter(prevState)
   }
@@ -50,6 +51,8 @@ export class CharacterFSM extends FiniteStateMachine {
     this._AddState('walk_back', WalkBackState)
     this._AddState('run', RunState)
     this._AddState('jump', JumpState)
-    this._AddState('idleWait', IdleWaitState);
+    this._AddState('idleWait', IdleWaitState)
+    this._AddState('right', RightState)
+    this._AddState('left', LeftState)
   }
 }

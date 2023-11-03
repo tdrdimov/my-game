@@ -24,8 +24,21 @@ export class WalkState extends State {
         curAction.setEffectiveWeight(1.0)
       }
 
-      curAction.crossFadeFrom(prevAction, 0.4, true)
+      curAction.crossFadeFrom(prevAction, 0.5, true)
       curAction.play()
+
+      // Use opacity (a custom property) for fade-in/fade-out
+      prevAction.crossFadeTo(curAction, 0.2, true)
+      prevAction.enabled = true
+      prevAction.setEffectiveTimeScale(1)
+      prevAction.setEffectiveWeight(1)
+
+      // Fade out the previous animation
+      prevAction.fadeOut(0.2)
+
+      // Fade in the current animation
+      curAction.setEffectiveWeight(1)
+      curAction.fadeIn(0.2)
     } else {
       curAction.play()
     }

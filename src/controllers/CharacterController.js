@@ -3,7 +3,6 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import BasicCharacterControllerInput from '../inputs/BasicCharacterControllerInput.js'
 import { CharacterFSM } from '../states/StateMachine.js'
 import CameraFollowController from './CameraController.js'
-
 class BasicCharacterControllerProxy {
   constructor(animations) {
     this._animations = animations
@@ -22,7 +21,7 @@ export class BasicCharacterController {
   _Init(params) {
     this._params = params
     this._decceleration = new THREE.Vector3(-0.0005, -0.0001, -5.0)
-    this._acceleration = new THREE.Vector3(1, 0.25, 150.0)
+    this._acceleration = new THREE.Vector3(1, 0.25, 200.0)
     this._velocity = new THREE.Vector3(0, 0, 0)
 
     this._animations = {}
@@ -44,7 +43,11 @@ export class BasicCharacterController {
       this._target = fbx
       this._params.scene.add(this._target)
 
-      this.cameraController = new CameraFollowController(this._params.camera, this._target, this._params.renderer)
+      this.cameraController = new CameraFollowController(
+        this._params.camera,
+        this._target,
+        this._params.renderer
+      )
 
       this._mixer = new THREE.AnimationMixer(this._target)
 
@@ -83,6 +86,12 @@ export class BasicCharacterController {
       loader.load('Idle.fbx', (a) => {
         _OnLoad('idleWait', a)
       })
+      loader.load('LeftTurn.fbx', (a) => {
+        _OnLoad('left', a)
+      })
+      loader.load('RightTurn.fbx', (a) => {
+        _OnLoad('right', a)
+      })
     })
   }
 
@@ -95,7 +104,7 @@ export class BasicCharacterController {
 
     const velocity = this._velocity
 
-    // update camera 
+    // update camera
     this.cameraController.Update(timeInSeconds)
 
     const frameDecceleration = new THREE.Vector3(
@@ -104,7 +113,7 @@ export class BasicCharacterController {
       velocity.z * this._decceleration.z
     )
     frameDecceleration.multiplyScalar(timeInSeconds)
-    frameDecceleration.z = 
+    frameDecceleration.z =
       Math.sign(frameDecceleration.z) *
       Math.min(Math.abs(frameDecceleration.z), Math.abs(velocity.z))
 
@@ -128,7 +137,7 @@ export class BasicCharacterController {
       velocity.z += acc.z * timeInSeconds
     }
     if (this._input._keys.backward) {
-      velocity.z -= acc.z * timeInSeconds
+      velocity.z -= (acc.z - 150) * timeInSeconds
     }
     if (this._input._keys.left) {
       _A.set(0, 1, 0)
@@ -156,7 +165,7 @@ export class BasicCharacterController {
 
     sideways.multiplyScalar(velocity.x * timeInSeconds)
     forward.multiplyScalar(velocity.z * timeInSeconds)
-    
+
     controlObject.position.add(forward)
     controlObject.position.add(sideways)
 
