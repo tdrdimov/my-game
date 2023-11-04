@@ -1,4 +1,4 @@
-export default class BasicCharacterControllerInput {
+export default class CharacterControllerInput {
   constructor() {
     this._Init()
   }

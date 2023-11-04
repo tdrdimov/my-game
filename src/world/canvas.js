@@ -2,9 +2,9 @@
 import * as THREE from 'three'
 
 export class Canvas {
-  constructor(scene) {
-    this._scene = scene
+  constructor(camera) {
     this._CreateCanvas()
+    this._camera = camera
   }
 
   _CreateCanvas() {

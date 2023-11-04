@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { BasicCharacterController } from '../controllers/CharacterController'
+import { CharacterController } from '../controllers/CharacterController'
 import BoxGenerator from '../generators/BoxGenerator'
 import { Camera } from './camera'
 import { Lights } from './lights'
@@ -14,8 +14,8 @@ export class World {
   _Initialize() {
     this._mixers = []
     this._previousRAF = null
-    this.canvas = new Canvas()
     this._camera = new Camera().camera
+    this.canvas = new Canvas(this._camera)
     this._scene = new THREE.Scene()
     new Lights(this._scene)
     this.floor = new Floor(this._scene)
@@ -33,9 +33,10 @@ export class World {
   _LoadAnimatedModel() {
     const params = {
       camera: this._camera,
-      scene: this._scene
+      scene: this._scene,
+      renderer: this.canvas._threejs,
     }
-    this._controls = new BasicCharacterController(params)
+    this._controls = new CharacterController(params)
   }
 
   _RAF() {

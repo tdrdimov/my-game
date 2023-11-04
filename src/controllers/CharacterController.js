@@ -1,98 +1,38 @@
 import * as THREE from 'three'
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
-import BasicCharacterControllerInput from '../inputs/BasicCharacterControllerInput.js'
+import CharacterControllerInput from '../inputs/CharacterControllerInput.js'
 import { CharacterFSM } from '../states/StateMachine.js'
-import CameraFollowController from './CameraController.js'
-class BasicCharacterControllerProxy {
-  constructor(animations) {
-    this._animations = animations
-  }
+import { AnimationsProxy } from '../loaders/AnimationsProxy.js'
+import { FBXLoaderUtil } from '../loaders/FBXLoaderUtil.js'
 
-  get animations() {
-    return this._animations
-  }
-}
-
-export class BasicCharacterController {
+export class CharacterController {
   constructor(params) {
     this._Init(params)
   }
 
-  _Init(params) {
+  async _Init(params) {
     this._params = params
     this._decceleration = new THREE.Vector3(-0.0005, -0.0001, -5.0)
     this._acceleration = new THREE.Vector3(1, 0.25, 200.0)
     this._velocity = new THREE.Vector3(0, 0, 0)
 
     this._animations = {}
-    this._input = new BasicCharacterControllerInput()
-    this._stateMachine = new CharacterFSM(new BasicCharacterControllerProxy(this._animations))
-    this.cameraController = {}
-    this._LoadModels()
+    this._input = new CharacterControllerInput()
+    this._stateMachine = new CharacterFSM(new AnimationsProxy(this._animations))
+
+    this.FBXLoaderUtil = new FBXLoaderUtil(this._stateMachine, this._params, this._animations)
+    const modelData = await this.loadCharacter()
+    this._target = modelData.target
+    this._mixer = modelData.mixer
+    this._stateMachine = modelData.stateMachine
+    this.cameraController = modelData.cameraController
   }
 
-  _LoadModels() {
-    const loader = new FBXLoader()
-    loader.setPath('../models/')
-    loader.load('michelle.fbx', (fbx) => {
-      fbx.scale.setScalar(0.1)
-      fbx.traverse((c) => {
-        c.castShadow = true
-      })
-
-      this._target = fbx
-      this._params.scene.add(this._target)
-
-      this.cameraController = new CameraFollowController(
-        this._params.camera,
-        this._target,
-        this._params.renderer
-      )
-
-      this._mixer = new THREE.AnimationMixer(this._target)
-
-      this._manager = new THREE.LoadingManager()
-      this._manager.onLoad = () => {
-        this._stateMachine.SetState('idle')
-      }
-
-      const _OnLoad = (animName, anim) => {
-        const clip = anim.animations[0]
-        const action = this._mixer.clipAction(clip)
-
-        this._animations[animName] = {
-          clip: clip,
-          action: action
-        }
-      }
-
-      const loader = new FBXLoader(this._manager)
-      loader.setPath('../animations/')
-      loader.load('Walk.fbx', (a) => {
-        _OnLoad('walk', a)
-      })
-      loader.load('Run.fbx', (a) => {
-        _OnLoad('run', a)
-      })
-      loader.load('BreathingIdle.fbx', (a) => {
-        _OnLoad('idle', a)
-      })
-      loader.load('Jump.fbx', (a) => {
-        _OnLoad('jump', a)
-      })
-      loader.load('Backward.fbx', (a) => {
-        _OnLoad('walk_back', a)
-      })
-      loader.load('Idle.fbx', (a) => {
-        _OnLoad('idleWait', a)
-      })
-      loader.load('LeftTurn.fbx', (a) => {
-        _OnLoad('left', a)
-      })
-      loader.load('RightTurn.fbx', (a) => {
-        _OnLoad('right', a)
-      })
-    })
+  async loadCharacter() {
+    try {
+      return await this.FBXLoaderUtil.loadModels()
+    } catch (error) {
+      console.error('Error loading models:', error)
+    }
   }
 
   Update(timeInSeconds) {
