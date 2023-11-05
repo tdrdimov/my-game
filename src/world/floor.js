@@ -1,10 +1,11 @@
-// Lights.js
-import * as THREE from 'three';
+import * as CANNON from 'cannon-es'
+import * as THREE from 'three'
 
 export class Floor {
-  constructor(scene) {
-    this._scene = scene;
-    this._CreateFloor();
+  constructor(scene, cannon) {
+    this._scene = scene
+    this._world = cannon._world
+    this._CreateFloor()
   }
 
   _CreateFloor() {
@@ -18,5 +19,12 @@ export class Floor {
     plane.receiveShadow = true
     plane.rotation.x = -Math.PI / 2
     this._scene.add(plane)
+
+    const floorShape = new CANNON.Plane()
+    const floorBody = new CANNON.Body()
+    floorBody.mass = 0
+    floorBody.addShape(floorShape)
+    floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5)
+    this._world.addBody(floorBody)
   }
 }

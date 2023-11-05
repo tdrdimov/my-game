@@ -3,6 +3,7 @@ import CharacterControllerInput from '../inputs/CharacterControllerInput.js'
 import { CharacterFSM } from '../states/StateMachine.js'
 import { AnimationsProxy } from '../loaders/AnimationsProxy.js'
 import { FBXLoaderUtil } from '../loaders/FBXLoaderUtil.js'
+import * as CANNON from 'cannon-es'
 
 export class CharacterController {
   constructor(params) {
@@ -11,6 +12,7 @@ export class CharacterController {
 
   async _Init(params) {
     this._params = params
+    this._world = this._params.cannon._world
     this._decceleration = new THREE.Vector3(-0.0005, -0.0001, -5.0)
     this._acceleration = new THREE.Vector3(1, 0.25, 200.0)
     this._velocity = new THREE.Vector3(0, 0, 0)
@@ -25,6 +27,24 @@ export class CharacterController {
     this._mixer = modelData.mixer
     this._stateMachine = modelData.stateMachine
     this.cameraController = modelData.cameraController
+    
+    // Cannon.js body
+    const targetSize = 1
+    const shape = new CANNON.Box(new CANNON.Vec3(targetSize * 0.5, targetSize * 0.5, targetSize * 0.5))
+
+    this.body = new CANNON.Body({
+      mass: 1,
+      position: new CANNON.Vec3(0, 3, 0),
+      shape: shape,
+      material: this._target.children[0].material
+    })
+    this.body.position.copy(this._target.position)
+    this.body.addEventListener('collide', this.onColide)
+    this._world.addBody(this.body)
+  }
+
+  onColide(firstImpact) {
+    // console.log(firstImpact)
   }
 
   async loadCharacter() {
@@ -108,8 +128,12 @@ export class CharacterController {
 
     controlObject.position.add(forward)
     controlObject.position.add(sideways)
+    // controlObject.position.copy(this.body.position)
 
     oldPosition.copy(controlObject.position)
+
+    this.body.position.copy(controlObject.position)
+    this.body.quaternion.copy(controlObject.quaternion)
 
     if (this._mixer) {
       this._mixer.update(timeInSeconds)

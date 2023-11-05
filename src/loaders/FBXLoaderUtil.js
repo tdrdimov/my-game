@@ -25,6 +25,7 @@ export class FBXLoaderUtil {
         })
 
         this._target = fbx
+        // this._target.position.set(0, 20, 0)
         this._params.scene.add(this._target)
 
         this.cameraController = new CameraFollowController(
