@@ -9,10 +9,16 @@ export class Floor {
   }
 
   _CreateFloor() {
+    const planeWidth = 300
+    const planeHeight = 150
+    
+    const textureLoader = new THREE.TextureLoader()
+    const texture = textureLoader.load('./fussballfeld.jpg')
     const plane = new THREE.Mesh(
-      new THREE.PlaneGeometry(200, 200, 20, 20),
+      new THREE.PlaneGeometry(planeWidth, planeHeight, 20, 20),
       new THREE.MeshStandardMaterial({
-        color: 0x808080
+        color: 0x808080,
+        map: texture
       })
     )
     plane.castShadow = false

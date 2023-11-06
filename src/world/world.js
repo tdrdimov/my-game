@@ -1,11 +1,12 @@
 import * as THREE from 'three'
 import { CharacterController } from '../controllers/CharacterController'
-import BoxGenerator from '../generators/BoxGenerator'
+import BallGenerator from '../generators/BallGenerator'
 import { Camera } from './camera'
 import { Lights } from './lights'
 import { Floor } from './floor'
 import { Canvas } from './canvas'
 import { CannonWorld } from './cannonWorld'
+import { Walls } from './walls'
 
 export class World {
   constructor() {
@@ -21,12 +22,10 @@ export class World {
     this._scene = new THREE.Scene()
     new Lights(this._scene)
     this.floor = new Floor(this._scene, this.cannonWorld)
-    this.boxGenerator = new BoxGenerator(this._scene, this.cannonWorld)
+    this.walls = new Walls(this._scene, this.cannonWorld)
+    this.ballGenerator = new BallGenerator(this._scene, this.cannonWorld)
 
-    // Create boxes using the box generator
-    this.boxGenerator.createBox(0, 13, 0)
-    this.boxGenerator.createBox(20, 20, 0)
-    this.boxGenerator.createBox(40, 20, 0)
+    this.ballGenerator.createBall(0, 13, 0)
 
     this._LoadAnimatedModel()
     this._RAF()
@@ -55,7 +54,7 @@ export class World {
       this._previousRAF = t
 
       this.cannonWorld._world.step(1 / 60, this._previousRAF, 3)
-      this.boxGenerator.update()
+      this.ballGenerator.update()
     })
   }
 

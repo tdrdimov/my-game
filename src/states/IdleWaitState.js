@@ -38,14 +38,16 @@ export class IdleWaitState extends State {
       this._parent.SetState('idle'); // Transition back to idle after waiting
     }
 
-    // TODO
-    // blend wait idle animation with walk, jump, run etc
     if (input._keys.forward) {
       this._parent.SetState('walk');
     } else if (!input._keys.forward && input._keys.backward) {
       this._parent.SetState('walk_back');
     } else if (input._keys.space) {
       this._parent.SetState('jump')
+    } else if (input._keys.left) {
+      this._parent.SetState('left')
+    } else if (input._keys.right) {
+      this._parent.SetState('right')
     }
   }
 }

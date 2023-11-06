@@ -29,7 +29,7 @@ export class CharacterController {
     this.cameraController = modelData.cameraController
     
     // Cannon.js body
-    const targetSize = 1
+    const targetSize = 2
     const shape = new CANNON.Box(new CANNON.Vec3(targetSize * 0.5, targetSize * 0.5, targetSize * 0.5))
 
     this.body = new CANNON.Body({
@@ -101,12 +101,12 @@ export class CharacterController {
     }
     if (this._input._keys.left) {
       _A.set(0, 1, 0)
-      _Q.setFromAxisAngle(_A, 4.0 * Math.PI * timeInSeconds * this._acceleration.y)
+      _Q.setFromAxisAngle(_A, 6.0 * Math.PI * timeInSeconds * this._acceleration.y)
       _R.multiply(_Q)
     }
     if (this._input._keys.right) {
       _A.set(0, 1, 0)
-      _Q.setFromAxisAngle(_A, 4.0 * -Math.PI * timeInSeconds * this._acceleration.y)
+      _Q.setFromAxisAngle(_A, 6.0 * -Math.PI * timeInSeconds * this._acceleration.y)
       _R.multiply(_Q)
     }
 

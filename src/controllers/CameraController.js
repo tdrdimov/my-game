@@ -6,7 +6,7 @@ export default class CameraFollowController {
     this.camera = camera
     this.target = target
     this.renderer = renderer
-    this.distance = 50 // The distance between the character and camera
+    this.distance = 60 // The distance between the character and camera
     this.height = 60 // The height of the camera above the character
     this.Init()
   }

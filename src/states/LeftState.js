@@ -15,8 +15,7 @@ export class LeftState extends State {
       const prevAction = this._parent._proxy._animations[prevState.Name].action
 
       curAction.enabled = true
-
-      curAction.crossFadeFrom(prevAction, 0.4, true)
+      curAction.crossFadeFrom(prevAction, 0.2, true)
 
       if (prevState.Name == 'run') {
         const ratio = curAction.getClip().duration / prevAction.getClip().duration
@@ -27,7 +26,6 @@ export class LeftState extends State {
         curAction.setEffectiveWeight(1.0)
       }
 
-      curAction.crossFadeFrom(prevAction, 0.2, true)
       curAction.play()
     } else {
       curAction.play()
@@ -40,13 +38,16 @@ export class LeftState extends State {
     input._keys.left = false
     setTimeout(() => {
       input._keys.left = true
-    }, 100)
+    }, 50)
   }
 
   Update(timeElapsed, input) {
     if (input._keys.left) {
       if (input._keys.forward) {
         this.resetAnimation(input)
+        if (input._keys.right) {
+          this.resetAnimation(input)
+        }
       }
       if (input._keys.backward) {
         this.resetAnimation(input)

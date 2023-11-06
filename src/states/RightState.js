@@ -14,6 +14,7 @@ export class RightState extends State {
       const prevAction = this._parent._proxy._animations[prevState.Name].action
 
       curAction.enabled = true
+      curAction.crossFadeFrom(prevAction, 0.2, true)
 
       if (prevState.Name == 'run') {
         const ratio = curAction.getClip().duration / prevAction.getClip().duration
@@ -24,7 +25,6 @@ export class RightState extends State {
         curAction.setEffectiveWeight(1.0)
       }
 
-      curAction.crossFadeFrom(prevAction, 0.2, true)
       curAction.play()
     } else {
       curAction.play()
@@ -37,7 +37,7 @@ export class RightState extends State {
     input._keys.right = false
     setTimeout(() => {
       input._keys.right = true
-    }, 100)
+    }, 50)
   }
 
   Update(timeElapsed, input) {
