@@ -3,7 +3,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import CameraFollowController from '../controllers/CameraController.js'
 
 export class FBXLoaderUtil {
-  constructor(_stateMachine, params, animations) {
+  constructor(_stateMachine, params, animations, entityManager) {
     this.loader = new FBXLoader()
     this.modelsPath = '../models/'
     this.animationsPath = '../animations/'
@@ -13,25 +13,28 @@ export class FBXLoaderUtil {
     this._target = null
     this.cameraController = {}
     this._mixer = null
+    this.entityManager = entityManager
   }
 
   async loadModels() {
     return new Promise((resolve, reject) => {
       this.loader.setPath(this.modelsPath)
       this.loader.load('michelle.fbx', (fbx) => {
-        fbx.scale.setScalar(0.1)
+        fbx.name = 'character'
         fbx.traverse((c) => {
           c.castShadow = true
         })
 
         this._target = fbx
-        this._target.position.set(0, 0, -30)
+        this._target.matrixAutoUpdate = false
+        this._target.position.set(0, 0, 0)
         this._params.scene.add(this._target)
 
         this.cameraController = new CameraFollowController(
           this._params.camera,
           this._target,
-          this._params.renderer
+          this._params.renderer,
+          this.entityManager
         )
 
         this._mixer = new THREE.AnimationMixer(this._target)

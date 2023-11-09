@@ -21,6 +21,7 @@ export class Floor {
         map: texture
       })
     )
+    plane.name = 'floor'
     plane.castShadow = false
     plane.receiveShadow = true
     plane.rotation.x = -Math.PI / 2

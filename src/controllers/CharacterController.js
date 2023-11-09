@@ -4,6 +4,7 @@ import { CharacterFSM } from '../states/StateMachine.js'
 import { AnimationsProxy } from '../loaders/AnimationsProxy.js'
 import { FBXLoaderUtil } from '../loaders/FBXLoaderUtil.js'
 import * as CANNON from 'cannon-es'
+import * as YUKA from 'yuka'
 
 export class CharacterController {
   constructor(params) {
@@ -13,31 +14,81 @@ export class CharacterController {
   async _Init(params) {
     this._params = params
     this._world = this._params.cannon._world
-    this._decceleration = new THREE.Vector3(-0.0005, -0.0001, -5.0)
-    this._acceleration = new THREE.Vector3(1, 0.25, 200.0)
-    this._velocity = new THREE.Vector3(0, 0, 0)
-
+    this.raycaster = new THREE.Raycaster()
     this._animations = {}
-    this._input = new CharacterControllerInput()
+    this.vehicle = new YUKA.Vehicle()
+    this._input = new CharacterControllerInput(this.vehicle)
     this._stateMachine = new CharacterFSM(new AnimationsProxy(this._animations))
+    this.entityManager = new YUKA.EntityManager()
+    this.FBXLoaderUtil = new FBXLoaderUtil(
+      this._stateMachine,
+      this._params,
+      this._animations,
+      this.entityManager
+    )
+    this.fbxModel = await this.loadCharacter()
+    this._target = this.fbxModel.target
+    this._mixer = this.fbxModel.mixer
+    this._stateMachine = this.fbxModel.stateMachine
+    this.cameraController = this.fbxModel.cameraController
+    this.time = new YUKA.Time()
+    this.entity = new YUKA.GameEntity()
+    this.indicator = null
+    this.indicatorGeometry = new THREE.ConeGeometry(4, 2, 12)
+    this.indicatorMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffff00,
+      transparent: true,
+      opacity: 0.2
+    })
 
-    this.FBXLoaderUtil = new FBXLoaderUtil(this._stateMachine, this._params, this._animations)
-    const modelData = await this.loadCharacter()
-    this._target = modelData.target
-    this._mixer = modelData.mixer
-    this._stateMachine = modelData.stateMachine
-    this.cameraController = modelData.cameraController
-    
+    // Add event listeners for mouse click
+    window.addEventListener('click', (event) => {
+      this.handleMouseClick(event)
+    })
+
+    let isMouseButtonDown = false
+
+    window.addEventListener('mousedown', (event) => {
+      isMouseButtonDown = true
+      this.handleMouseClick(event)
+    })
+
+    window.addEventListener('mouseup', () => {
+      isMouseButtonDown = false
+    })
+
+    // Continuously update the target position while the mouse button is held
+    window.addEventListener('mousemove', (event) => {
+      if (isMouseButtonDown && this._target) {
+        this.handleMouseClick(event)
+      }
+    })
+
     // Cannon.js body
     const targetSize = 2
-    const shape = new CANNON.Box(new CANNON.Vec3(targetSize * 0.5, targetSize * 0.5, targetSize * 0.5))
+    const shape = new CANNON.Box(
+      new CANNON.Vec3(targetSize * 0.5, targetSize * 0.5, targetSize * 0.5)
+    )
 
     this.body = new CANNON.Body({
       mass: 1,
-      position: new CANNON.Vec3(0, 3, 0),
+      position: new CANNON.Vec3(0, 0, 0),
       shape: shape,
       material: this._target.children[0].material
     })
+
+    // YUKA vehicle configuration
+    this.vehicle.setRenderComponent(this._target, this.sync)
+    this.vehicle.position.set(0, 0, 0)
+    this.vehicle.maxSpeed = 50
+    this.vehicle.mass = 0.01
+    this.vehicle.scale.set(0.1, 0.1, 0.1)
+
+    const arriveBehavior = new YUKA.ArriveBehavior(this.entity.position, 0.14, 1)
+    this.vehicle.steering.add(arriveBehavior)
+
+    this.entityManager.add(this.vehicle)
+
     this.body.position.copy(this._target.position)
     this.body.addEventListener('collide', this.onColide)
     this._world.addBody(this.body)
@@ -55,86 +106,67 @@ export class CharacterController {
     }
   }
 
-  Update(timeInSeconds) {
+  sync(entity, renderComponent) {
+    renderComponent.matrix.copy(entity.worldMatrix)
+  }
+
+  handleMouseClick(event) {
     if (!this._target) {
       return
     }
 
+    const mousePosition = new THREE.Vector2()
+    mousePosition.x = (event.clientX / window.innerWidth) * 2 - 1
+    mousePosition.y = -(event.clientY / window.innerHeight) * 2 + 1
+
+    this.raycaster.setFromCamera(mousePosition, this._params.camera)
+    const floorMesh = this._params.scene.getObjectByName('floor')
+    const intersects = this.raycaster.intersectObjects([floorMesh])
+
+    if (intersects.length) {
+      for (let i = 0; i < intersects.length; i++) {
+        this.entity.position.copy(intersects[i].point)
+      }
+    }
+
+    if (!this.indicator) {
+      this.indicator = new THREE.Mesh(this.indicatorGeometry, this.indicatorMaterial)
+      this._params.scene.add(this.indicator)
+    }
+
+    if (intersects.length) {
+      // Set the position of the indicator to the click point
+      this.indicator.position.copy(intersects[0].point)
+      this.indicator.position.y = 0
+    }
+  }
+
+  Update(t, timeInSeconds) {
+    if (!this._target) {
+      return
+    }
+
+    // update animations state machine
     this._stateMachine.Update(timeInSeconds, this._input)
 
-    const velocity = this._velocity
+    // Update YUKA entities
+    const delta = this.time.update().getDelta() // Use the time since the last frame as delta
+    this.entityManager.update(delta)
+
+    // update cannon.js body
+    this.body.position.copy(this.entityManager.entities[0].position)
 
     // update camera
     this.cameraController.Update(timeInSeconds)
 
-    const frameDecceleration = new THREE.Vector3(
-      velocity.x * this._decceleration.x,
-      velocity.y * this._decceleration.y,
-      velocity.z * this._decceleration.z
-    )
-    frameDecceleration.multiplyScalar(timeInSeconds)
-    frameDecceleration.z =
-      Math.sign(frameDecceleration.z) *
-      Math.min(Math.abs(frameDecceleration.z), Math.abs(velocity.z))
-
-    velocity.add(frameDecceleration)
-
-    const controlObject = this._target
-    const _Q = new THREE.Quaternion()
-    const _A = new THREE.Vector3()
-    const _R = controlObject.quaternion.clone()
-
-    const acc = this._acceleration.clone()
-    if (this._input._keys.shift) {
-      acc.multiplyScalar(2.0)
+    // trigger walking animation
+    if (this.vehicle.velocity.length() > 0.1) {
+      this._input._keys.forward = true
+    } else {
+      this._input._keys.forward = false
     }
 
-    if (this._stateMachine?._currentState?.Name == 'jump') {
-      acc.multiplyScalar(1.0)
-    }
-
-    if (this._input._keys.forward) {
-      velocity.z += acc.z * timeInSeconds
-    }
-    if (this._input._keys.backward) {
-      velocity.z -= (acc.z - 150) * timeInSeconds
-    }
-    if (this._input._keys.left) {
-      _A.set(0, 1, 0)
-      _Q.setFromAxisAngle(_A, 6.0 * Math.PI * timeInSeconds * this._acceleration.y)
-      _R.multiply(_Q)
-    }
-    if (this._input._keys.right) {
-      _A.set(0, 1, 0)
-      _Q.setFromAxisAngle(_A, 6.0 * -Math.PI * timeInSeconds * this._acceleration.y)
-      _R.multiply(_Q)
-    }
-
-    controlObject.quaternion.copy(_R)
-
-    const oldPosition = new THREE.Vector3()
-    oldPosition.copy(controlObject.position)
-
-    const forward = new THREE.Vector3(0, 0, 1)
-    forward.applyQuaternion(controlObject.quaternion)
-    forward.normalize()
-
-    const sideways = new THREE.Vector3(1, 0, 0)
-    sideways.applyQuaternion(controlObject.quaternion)
-    sideways.normalize()
-
-    sideways.multiplyScalar(velocity.x * timeInSeconds)
-    forward.multiplyScalar(velocity.z * timeInSeconds)
-
-    controlObject.position.add(forward)
-    controlObject.position.add(sideways)
-    // controlObject.position.copy(this.body.position)
-
-    oldPosition.copy(controlObject.position)
-
-    this.body.position.copy(controlObject.position)
-    this.body.quaternion.copy(controlObject.quaternion)
-
+    // update animations
     if (this._mixer) {
       this._mixer.update(timeInSeconds)
     }

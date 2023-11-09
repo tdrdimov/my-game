@@ -25,7 +25,7 @@ export class World {
     this.walls = new Walls(this._scene, this.cannonWorld)
     this.ballGenerator = new BallGenerator(this._scene, this.cannonWorld)
 
-    this.ballGenerator.createBall(0, 13, 0)
+    this.ballGenerator.createBall(0, 13, 10)
 
     this._LoadAnimatedModel()
     this._RAF()
@@ -50,7 +50,7 @@ export class World {
       this._RAF()
 
       this.canvas._threejs.render(this._scene, this._camera)
-      this._Step(t - this._previousRAF)
+      this._Step(t, t - this._previousRAF)
       this._previousRAF = t
 
       this.cannonWorld._world.step(1 / 60, this._previousRAF, 3)
@@ -58,14 +58,14 @@ export class World {
     })
   }
 
-  _Step(timeElapsed) {
+  _Step(t, timeElapsed) {
     const timeElapsedS = timeElapsed * 0.001
     if (this._mixers) {
       this._mixers.map((m) => m.update(timeElapsedS))
     }
 
     if (this._controls) {
-      this._controls.Update(timeElapsedS)
+      this._controls.Update(t, timeElapsedS)
     }
   }
 }
