@@ -52,10 +52,10 @@ export class WalkState extends State {
         this._parent.SetState('run')
       } else if (input._keys.space) {
         this._parent.SetState('jump')
+      } else if (input._keys.magic1) {
+        this._parent.SetState('magic1')
       }
       return
-    } else if (input._keys.backward) {
-      this._parent.SetState('walk_back')
     }
 
     this._parent.SetState('idle')

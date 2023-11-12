@@ -19,7 +19,7 @@ export class FBXLoaderUtil {
   async loadModels() {
     return new Promise((resolve, reject) => {
       this.loader.setPath(this.modelsPath)
-      this.loader.load('michelle.fbx', (fbx) => {
+      this.loader.load('mage-girl.fbx', (fbx) => {
         fbx.name = 'character'
         fbx.traverse((c) => {
           c.castShadow = true
@@ -27,6 +27,7 @@ export class FBXLoaderUtil {
 
         this._target = fbx
         this._target.matrixAutoUpdate = false
+
         this._target.position.set(0, 0, 0)
         this._params.scene.add(this._target)
 
@@ -57,10 +58,8 @@ export class FBXLoaderUtil {
           'Run.fbx': 'run',
           'BreathingIdle.fbx': 'idle',
           'Jump.fbx': 'jump',
-          'Backward.fbx': 'walk_back',
+          'Standing_2H_Magic_Attack_01.fbx': 'magic1',
           'Idle.fbx': 'idleWait',
-          'LeftTurn.fbx': 'left',
-          'RightTurn.fbx': 'right'
         }
 
         const loadPromises = []

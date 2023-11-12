@@ -5,6 +5,7 @@ import { AnimationsProxy } from '../loaders/AnimationsProxy.js'
 import { FBXLoaderUtil } from '../loaders/FBXLoaderUtil.js'
 import * as CANNON from 'cannon-es'
 import * as YUKA from 'yuka'
+import { ShootSpell } from '../states/ShootSpell.js'
 
 export class CharacterController {
   constructor(params) {
@@ -77,14 +78,21 @@ export class CharacterController {
       material: this._target.children[0].material
     })
 
+    this.shootSpell = new ShootSpell({
+      input: this._input,
+      scene: this._params.scene,
+      cannon: this._params.cannon,
+      body: this.body
+    })
+
     // YUKA vehicle configuration
     this.vehicle.setRenderComponent(this._target, this.sync)
     this.vehicle.position.set(0, 0, 0)
     this.vehicle.maxSpeed = 50
     this.vehicle.mass = 0.01
-    this.vehicle.scale.set(0.1, 0.1, 0.1)
+    this.vehicle.scale.set(0.05, 0.05, 0.05)
 
-    const arriveBehavior = new YUKA.ArriveBehavior(this.entity.position, 0.14, 1)
+    const arriveBehavior = new YUKA.ArriveBehavior(this.entity.position, 0.1, 0)
     this.vehicle.steering.add(arriveBehavior)
 
     this.entityManager.add(this.vehicle)
@@ -154,7 +162,9 @@ export class CharacterController {
     this.entityManager.update(delta)
 
     // update cannon.js body
-    this.body.position.copy(this.entityManager.entities[0].position)
+    const entity = this.entityManager.entities[0]
+    this.body.position.copy(entity.position)
+    this.body.quaternion.copy(entity.rotation)
 
     // update camera
     this.cameraController.Update(timeInSeconds)
@@ -165,6 +175,8 @@ export class CharacterController {
     } else {
       this._input._keys.forward = false
     }
+
+    this.shootSpell.cast()
 
     // update animations
     if (this._mixer) {

@@ -34,9 +34,9 @@ export class IdleWaitState extends State {
   Update(timeElapsed, input) {
     this._timer += timeElapsed;
 
-    if (this._timer >= this._waitDuration) {
-      this._parent.SetState('idle'); // Transition back to idle after waiting
-    }
+    // if (this._timer >= this._waitDuration) {
+    //   this._parent.SetState('idle'); // Transition back to idle after waiting
+    // }
 
     if (input._keys.forward) {
       this._parent.SetState('walk');
@@ -44,10 +44,6 @@ export class IdleWaitState extends State {
       this._parent.SetState('walk_back');
     } else if (input._keys.space) {
       this._parent.SetState('jump')
-    } else if (input._keys.left) {
-      this._parent.SetState('left')
-    } else if (input._keys.right) {
-      this._parent.SetState('right')
     }
   }
 }

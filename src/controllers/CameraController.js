@@ -7,7 +7,7 @@ export default class CameraFollowController {
     this.target = target
     this.entityManager = entityManager
     this.renderer = renderer
-    this.distance = 60 // The distance between the character and camera
+    this.distance = 50 // The distance between the character and camera
     this.height = 80 // The height of the camera above the character
     this.Init()
   }
@@ -35,7 +35,6 @@ export default class CameraFollowController {
     const dampingFactor = 0.01
     // Set the camera's position
     this.camera.position.lerp(cameraPosition, dampingFactor)
-    // this.camera.position.copy(cameraPosition)
 
     // Make the camera look at the target object
     this.camera.lookAt(targetPosition)

@@ -5,7 +5,7 @@ export default class CharacterControllerInput {
 
   _Init() {
     this._keys = {
-      forward: false,
+      magic1: false,
       backward: false,
       left: false,
       right: false,
@@ -18,10 +18,10 @@ export default class CharacterControllerInput {
 
   _onKeyDown(event) {
     switch (event.keyCode) {
-      case 87: // w
-        this._keys.forward = true
+      case 81: // q
+        this._keys.magic1 = true
         break
-      case 65: // a
+      case 87: // w
         this._keys.left = true
         break
       case 83: // s
@@ -41,10 +41,10 @@ export default class CharacterControllerInput {
 
   _onKeyUp(event) {
     switch (event.keyCode) {
-      case 87: // w
-        this._keys.forward = false
+      case 81: // q
+        this._keys.magic1 = false
         break
-      case 65: // a
+      case 87: // w
         this._keys.left = false
         break
       case 83: // s

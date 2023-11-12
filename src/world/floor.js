@@ -11,20 +11,22 @@ export class Floor {
   _CreateFloor() {
     const planeWidth = 300
     const planeHeight = 150
-    
+
     const textureLoader = new THREE.TextureLoader()
-    const texture = textureLoader.load('./fussballfeld.jpg')
+    const texture = textureLoader.load('./stones.jpg')
+    
     const plane = new THREE.Mesh(
       new THREE.PlaneGeometry(planeWidth, planeHeight, 20, 20),
       new THREE.MeshStandardMaterial({
-        color: 0x808080,
-        map: texture
+        color: 0x333333,
+        map: texture,
+        side: THREE.DoubleSide
       })
     )
     plane.name = 'floor'
     plane.castShadow = false
     plane.receiveShadow = true
-    plane.rotation.x = -Math.PI / 2
+    plane.rotation.x = Math.PI / 2
     this._scene.add(plane)
 
     const floorShape = new CANNON.Plane()
