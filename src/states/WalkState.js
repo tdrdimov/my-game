@@ -15,14 +15,9 @@ export class WalkState extends State {
 
       curAction.enabled = true
 
-      if (prevState.Name == 'run') {
-        const ratio = curAction.getClip().duration / prevAction.getClip().duration
-        curAction.time = prevAction.time * ratio
-      } else {
-        curAction.time = 0.0
-        curAction.setEffectiveTimeScale(1.0)
-        curAction.setEffectiveWeight(1.0)
-      }
+      curAction.time = 0.0
+      curAction.setEffectiveTimeScale(1.0)
+      curAction.setEffectiveWeight(1.0)
 
       curAction.crossFadeFrom(prevAction, 0.5, true)
       curAction.play()
@@ -48,9 +43,7 @@ export class WalkState extends State {
 
   Update(timeElapsed, input) {
     if (input._keys.forward) {
-      if (input._keys.shift) {
-        this._parent.SetState('run')
-      } else if (input._keys.space) {
+      if (input._keys.space) {
         this._parent.SetState('jump')
       } else if (input._keys.magic1) {
         this._parent.SetState('magic1')

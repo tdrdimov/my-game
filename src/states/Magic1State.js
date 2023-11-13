@@ -5,6 +5,7 @@ export class Magic1State extends State {
   constructor(parent) {
     super(parent)
     this.prevState = null
+    this.parent = parent
     this._FinishedCallback = () => {
       this._Finished()
     }
@@ -62,8 +63,13 @@ export class Magic1State extends State {
   }
 
   Update(timeElapsed, input) {
-    if (input._keys.forward) {
+    if (input._keys.forward && !timeElapsed) {
       this._parent.SetState('walk')
+    }
+    if (timeElapsed) {
+      // stop character from moving while casting
+      const currentPosition = this.parent.entity.position.clone()
+      this.parent.entity.position.set(currentPosition)
     }
   }
 }

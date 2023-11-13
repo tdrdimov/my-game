@@ -1,6 +1,5 @@
 import { IdleState } from './IdleState.js'
 import { WalkState } from './WalkState.js'
-import { RunState } from './RunState.js'
 import { JumpState } from './JumpState.js'
 import { IdleWaitState } from './IdleWaitState.js'
 import { Magic1State } from './Magic1State.js'
@@ -37,16 +36,16 @@ export class FiniteStateMachine {
 }
 
 export class CharacterFSM extends FiniteStateMachine {
-  constructor(proxy) {
+  constructor(proxy, entity) {
     super()
     this._proxy = proxy
+    this.entity = entity
     this._Init()
   }
 
   _Init() {
     this._AddState('idle', IdleState)
     this._AddState('walk', WalkState)
-    this._AddState('run', RunState)
     this._AddState('jump', JumpState)
     this._AddState('idleWait', IdleWaitState)
     this._AddState('magic1', Magic1State)

@@ -18,8 +18,10 @@ export class CharacterController {
     this.raycaster = new THREE.Raycaster()
     this._animations = {}
     this.vehicle = new YUKA.Vehicle()
+    this.time = new YUKA.Time()
+    this.entity = new YUKA.GameEntity()
     this._input = new CharacterControllerInput(this.vehicle)
-    this._stateMachine = new CharacterFSM(new AnimationsProxy(this._animations))
+    this._stateMachine = new CharacterFSM(new AnimationsProxy(this._animations), this.entity)
     this.entityManager = new YUKA.EntityManager()
     this.FBXLoaderUtil = new FBXLoaderUtil(
       this._stateMachine,
@@ -32,8 +34,6 @@ export class CharacterController {
     this._mixer = this.fbxModel.mixer
     this._stateMachine = this.fbxModel.stateMachine
     this.cameraController = this.fbxModel.cameraController
-    this.time = new YUKA.Time()
-    this.entity = new YUKA.GameEntity()
     this.indicator = null
     this.indicatorGeometry = new THREE.ConeGeometry(4, 2, 12)
     this.indicatorMaterial = new THREE.MeshBasicMaterial({
@@ -152,6 +152,12 @@ export class CharacterController {
   Update(t, timeInSeconds) {
     if (!this._target) {
       return
+    }
+    
+    if (this._input._keys.space) {
+      this.vehicle.maxSpeed = 100
+    } else {
+      this.vehicle.maxSpeed = 50
     }
 
     // update animations state machine

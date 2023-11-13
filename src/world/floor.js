@@ -9,14 +9,14 @@ export class Floor {
   }
 
   _CreateFloor() {
-    const planeWidth = 300
+    const planeWidth = 150
     const planeHeight = 150
 
     const textureLoader = new THREE.TextureLoader()
     const texture = textureLoader.load('./stones.jpg')
     
     const plane = new THREE.Mesh(
-      new THREE.PlaneGeometry(planeWidth, planeHeight, 20, 20),
+      new THREE.CircleGeometry(planeWidth, planeHeight, 5, 32),
       new THREE.MeshStandardMaterial({
         color: 0x333333,
         map: texture,

@@ -55,7 +55,6 @@ export class FBXLoaderUtil {
 
         const animationFiles = {
           'Walk.fbx': 'walk',
-          'Run.fbx': 'run',
           'BreathingIdle.fbx': 'idle',
           'Jump.fbx': 'jump',
           'Standing_2H_Magic_Attack_01.fbx': 'magic1',

@@ -4,6 +4,8 @@ export default class CharacterControllerInput {
   }
 
   _Init() {
+    this.lastQKeyPressTimestamp = 0
+    this.timeInterval = 1800
     this._keys = {
       magic1: false,
       backward: false,
@@ -19,7 +21,12 @@ export default class CharacterControllerInput {
   _onKeyDown(event) {
     switch (event.keyCode) {
       case 81: // q
-        this._keys.magic1 = true
+        if (event.timeStamp - this.lastQKeyPressTimestamp > this.timeInterval) {
+          this._keys.magic1 = true
+          this.lastQKeyPressTimestamp = event.timeStamp
+        } else {
+          this._keys.magic1 = false
+        }
         break
       case 87: // w
         this._keys.left = true
@@ -31,7 +38,11 @@ export default class CharacterControllerInput {
         this._keys.right = true
         break
       case 32: // SPACE
-        this._keys.space = true
+        if (!event.repeat) {
+          this._keys.space = true
+        } else {
+          this._keys.space = false
+        }
         break
       case 16: // SHIFT
         this._keys.shift = true

@@ -6,7 +6,7 @@ import { Floor } from './floor'
 import { Canvas } from './canvas'
 import { CannonWorld } from './cannonWorld'
 import { Walls } from './walls'
-
+import { Torch } from './torch'
 export class World {
   constructor() {
     this._Initialize()
@@ -24,6 +24,11 @@ export class World {
     this.walls = new Walls(this._scene, this.cannonWorld)
 
     this._LoadAnimatedModel()
+
+    // this.torch1 = new Torch(this._scene, new THREE.Vector3(50, -4, 0))
+    // this.torch2 = new Torch(this._scene, new THREE.Vector3(-100, -4, 0))
+    // this.torch3 = new Torch(this._scene, new THREE.Vector3(100, -4, 0))
+
     this._RAF()
   }
 
@@ -50,6 +55,10 @@ export class World {
       this._previousRAF = t
 
       this.cannonWorld._world.step(1 / 60, this._previousRAF, 3)
+
+      // this.torch1.updateAnimation(this._previousRAF)
+      // this.torch2.updateAnimation(this._previousRAF)
+      // this.torch3.updateAnimation(this._previousRAF)
     })
   }
 
