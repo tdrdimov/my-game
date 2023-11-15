@@ -16,12 +16,6 @@ export class ShootSpell {
       const playerPosition = this._params.body.position.clone()
       const playerQuaternion = modelRotation
 
-      // Set the character's rotation to face the forward direction
-      const characterRotation = new THREE.Quaternion()
-      characterRotation.setFromUnitVectors(new THREE.Vector3(0, 0, -1), modelForward)
-      this._params.body.quaternion.copy(characterRotation)
-      this._params.vehicle.rotation.copy(characterRotation)
-
       // Set the offset for the ball in front of the player
       const offsetDistance = 10 // Adjust this value based on your preference
       const offset = new THREE.Vector3(0, 0, offsetDistance)
