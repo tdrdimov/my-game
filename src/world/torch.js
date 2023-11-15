@@ -17,12 +17,9 @@ export class Torch {
     loader.load(
       '../models/torch.fbx',
       (fbx) => {
-        this._mixer = new THREE.AnimationMixer(fbx)
-        const animationClip = this._mixer.clipAction(fbx.animations[0])
         fbx.position.copy(this._position)
         fbx.scale.set(1, 1, 1)
         this._scene.add(fbx)
-        animationClip.play()
       },
       (xhr) => {
         console.log((xhr.loaded / xhr.total) * 100 + '% loaded')

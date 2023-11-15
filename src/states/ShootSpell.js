@@ -8,13 +8,19 @@ export class ShootSpell {
     this.magic1KeyIsPressed = false
   }
 
-  cast() {
+  cast(timeInSeconds) {
     if (this._params.input._keys.magic1 && !this.magic1KeyIsPressed) {
       // Copy the player's position and quaternion
       const modelRotation = this._params.body.quaternion.clone().normalize()
       const modelForward = new THREE.Vector3(0, 0, -1).applyQuaternion(modelRotation)
       const playerPosition = this._params.body.position.clone()
       const playerQuaternion = modelRotation
+
+      // Set the character's rotation to face the forward direction
+      const characterRotation = new THREE.Quaternion()
+      characterRotation.setFromUnitVectors(new THREE.Vector3(0, 0, -1), modelForward)
+      this._params.body.quaternion.copy(characterRotation)
+      this._params.vehicle.rotation.copy(characterRotation)
 
       // Set the offset for the ball in front of the player
       const offsetDistance = 10 // Adjust this value based on your preference
@@ -25,18 +31,18 @@ export class ShootSpell {
       const ballPosition = new THREE.Vector3().copy(playerPosition).add(offset)
 
       // Calculate the velocity of the ball based on the player's rotation
-      const ballVelocityMagnitude = 100 // Adjust the speed as needed
+      const ballVelocityMagnitude = 30 // Adjust the speed as needed
       const ballVelocity = modelForward.clone().multiplyScalar(-ballVelocityMagnitude)
-
+      const characterHeight = 15
       // Create the ball at the calculated position
       setTimeout(() => {
         this.ballGenerator.createBall(
           ballPosition.x,
-          ballPosition.y + 15,
+          ballPosition.y + characterHeight,
           ballPosition.z,
           ballVelocity
         )
-      }, 1000)
+      }, 700)
 
       // Set the flag to indicate that the magic1 key is pressed
       this.magic1KeyIsPressed = true
@@ -44,6 +50,6 @@ export class ShootSpell {
       // Reset the flag when the magic1 key is released
       this.magic1KeyIsPressed = false
     }
-    this.ballGenerator.update()
+    this.ballGenerator.update(timeInSeconds)
   }
 }

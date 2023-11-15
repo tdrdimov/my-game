@@ -13,16 +13,24 @@ export class Floor {
     const planeHeight = 150
 
     const textureLoader = new THREE.TextureLoader()
-    const texture = textureLoader.load('./stones.jpg')
-    
-    const plane = new THREE.Mesh(
-      new THREE.CircleGeometry(planeWidth, planeHeight, 5, 32),
-      new THREE.MeshStandardMaterial({
-        color: 0x333333,
-        map: texture,
-        side: THREE.DoubleSide
-      })
-    )
+    const texture = textureLoader.load('./stone-floor.jpg')
+    const specularTexture = textureLoader.load('./SpecularMap.jpg')
+    const normalMapTexture = textureLoader.load('./NormalMap.jpg')
+    const displacementMapTexture = textureLoader.load('./DisplacementMap.jpg')
+    const ambientOcclusionTexture = textureLoader.load('./AmbientOcclusionMap.jpg')
+
+    const planeGeometry = new THREE.CircleGeometry(planeWidth, planeHeight, 5, 32)
+
+    const planeMaterial = new THREE.MeshStandardMaterial({
+      color: 0x888888,
+      map: texture,
+      specularMap: specularTexture,
+      normalMap: normalMapTexture,
+      displacementMap: displacementMapTexture,
+      aoMap: ambientOcclusionTexture,
+      side: THREE.DoubleSide
+    })
+    const plane = new THREE.Mesh(planeGeometry, planeMaterial)
     plane.name = 'floor'
     plane.castShadow = false
     plane.receiveShadow = true

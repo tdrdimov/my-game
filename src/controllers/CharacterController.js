@@ -78,13 +78,6 @@ export class CharacterController {
       material: this._target.children[0].material
     })
 
-    this.shootSpell = new ShootSpell({
-      input: this._input,
-      scene: this._params.scene,
-      cannon: this._params.cannon,
-      body: this.body
-    })
-
     // YUKA vehicle configuration
     this.vehicle.setRenderComponent(this._target, this.sync)
     this.vehicle.position.set(0, 0, 0)
@@ -100,10 +93,23 @@ export class CharacterController {
     this.body.position.copy(this._target.position)
     this.body.addEventListener('collide', this.onColide)
     this._world.addBody(this.body)
+
+    this.shootSpell = new ShootSpell({
+      input: this._input,
+      scene: this._params.scene,
+      cannon: this._params.cannon,
+      body: this.body,
+      entityManager: this.entityManager,
+      vehicle: this.vehicle
+    })
   }
 
-  onColide(firstImpact) {
-    // console.log(firstImpact)
+  onColide(event) {
+    // const { body, target } = event;
+    // // Check if the collision involves a different body
+    // if (body !== target) {
+    //   // Handle the collision event
+    // }
   }
 
   async loadCharacter() {
@@ -182,7 +188,7 @@ export class CharacterController {
       this._input._keys.forward = false
     }
 
-    this.shootSpell.cast()
+    this.shootSpell.cast(timeInSeconds)
 
     // update animations
     if (this._mixer) {

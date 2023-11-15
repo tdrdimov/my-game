@@ -1,48 +1,111 @@
-import * as THREE from 'three';
-import * as CANNON from 'cannon-es';
+import * as CANNON from 'cannon-es'
+import * as THREE from 'three'
+import { BatchedParticleRenderer, QuarksLoader } from 'three.quarks' // Import only ParticleEmitter
 
 export default class BallGenerator {
   constructor(scene, cannon) {
-    this.scene = scene;
-    this._world = cannon._world;
-    this.balls = [];
+    this.scene = scene
+    this._world = cannon._world
+    this.balls = []
+    this.magicEmitters = []
+    this.particleSystems = null
+    this.batchSystem = new BatchedParticleRenderer()
   }
 
   createBall(x, y, z, velocity) {
-    const fireballMaterial = new THREE.MeshStandardMaterial({
-      emissive: 0xff6600,
-      emissiveIntensity: 1,
-      color: 0xff3300,
-    });
-
-    const fireballGeometry = new THREE.SphereGeometry(2, 32, 32);
-    const mesh = new THREE.Mesh(fireballGeometry, fireballMaterial);
-    mesh.castShadow = true;
-    mesh.position.set(x, y, z);
-    this.scene.add(mesh);
-
-    // Cannon.js body
-    const shape = new CANNON.Sphere(2);
-
+    // Your existing code for creating cannon.js body and three.js mesh
+    const shape = new CANNON.Sphere(2)
     const body = new CANNON.Body({
       mass: 1,
       position: new CANNON.Vec3(x, y, z),
       shape: shape,
       material: this._world.defaultMaterial,
-    });
+      type: CANNON.Body.KINEMATIC,
+      allowSleep: false
+    })
+    body.linearDamping = 0.1
+    body.velocity.set(velocity.x, velocity.y, velocity.z)
 
-    body.linearDamping = 0.2;
-    body.velocity.set(velocity.x, velocity.y, velocity.z);
-    this._world.addBody(body);
+    this._world.addBody(body)
 
-    // Store the balls in the array for collision detection
-    this.balls.push({ mesh, body });
+    const fireballMaterial = new THREE.MeshStandardMaterial({
+      color: 0xff000000,
+      transparent: true,
+      opacity: 0
+    })
+
+    const fireballGeometry = new THREE.SphereGeometry(0, 32, 32)
+    const mesh = new THREE.Mesh(fireballGeometry, fireballMaterial)
+    mesh.castShadow = true
+    mesh.position.set(x, y, z)
+    this.scene.add(mesh)
+
+    this.scene.add(this.batchSystem)
+    let loader = new QuarksLoader()
+    loader.setCrossOrigin('')
+    loader.load(
+      './atom.json',
+      (object3D) => {
+        object3D.position.set(x, y, z)
+        object3D.scale.set(1, 1, 1)
+
+        object3D.traverse((child) => {
+          if (child.type === 'ParticleEmitter') {
+            // Store the particle system with each ball
+            const ball = { mesh, body: {...body}, particleSystem: child }
+            this.balls.push(ball)
+            // Add the system to the batch renderer
+            this.batchSystem.addSystem(child.system)
+            
+            body.addEventListener('collide', (event) => {
+              this.handleCollision(ball)
+            })
+          }
+        })
+        this.particleSystems = object3D
+        this.scene.add(this.particleSystems)
+      },
+      () => {},
+      () => {}
+    )
   }
 
-  update() {
-    for (const ball of this.balls) {
-      ball.mesh.position.copy(ball.body.position);
-      ball.mesh.quaternion.copy(ball.body.quaternion);
+  handleCollision(ball) {
+    setTimeout(() => {
+    this.scene.remove(ball.mesh)
+    
+    if (ball.particleSystem) {
+      this.batchSystem.deleteSystem(ball.particleSystem.system)
     }
+    
+    this._world.removeBody(ball.body)
+    const index = this.balls.indexOf(ball)
+
+    if (index !== -1) {
+      this.balls.splice(index, 1)
+    }
+    }, 3000)
+  }
+
+  update(timeInSeconds) {
+    // Your existing code for updating cannon.js bodies and three.js meshes
+    for (const ball of this.balls) {
+      ball.mesh.position.copy(ball.body.position)
+      ball.mesh.quaternion.copy(ball.body.quaternion)
+
+      if (ball.particleSystem) {
+        const ballPosition = ball.body.position.clone()
+
+        // Calculate the offset between the ball and the particle system
+        const offset = new THREE.Vector3()
+        ball.particleSystem.getWorldPosition(offset)
+        offset.sub(ballPosition)
+
+        // Apply the offset to align the particle system with the ball
+        ball.particleSystem.position.sub(offset)
+      }
+    }
+
+    this.batchSystem.update(timeInSeconds)
   }
 }

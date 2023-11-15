@@ -25,7 +25,7 @@ export class World {
 
     this._LoadAnimatedModel()
 
-    // this.torch1 = new Torch(this._scene, new THREE.Vector3(50, -4, 0))
+    this.torch1 = new Torch(this._scene, new THREE.Vector3(50, -4, 0))
     // this.torch2 = new Torch(this._scene, new THREE.Vector3(-100, -4, 0))
     // this.torch3 = new Torch(this._scene, new THREE.Vector3(100, -4, 0))
 
