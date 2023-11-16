@@ -82,12 +82,12 @@ export class CharacterController {
     this.vehicle.setRenderComponent(this._target, this.sync)
     this.vehicle.position.set(0, 0, 0)
     this.vehicle.maxSpeed = 50
-    this.vehicle.mass = 0.01
+    this.vehicle.mass = 0.1
     this.vehicle.scale.set(0.05, 0.05, 0.05)
     
     const arriveBehavior = new YUKA.ArriveBehavior(this.entity.position)
     arriveBehavior.deceleration = 0.2
-    arriveBehavior.tolerance = 2
+    arriveBehavior.tolerance = 1
     this.vehicle.steering.add(arriveBehavior)
 
     this.entityManager.add(this.vehicle)
