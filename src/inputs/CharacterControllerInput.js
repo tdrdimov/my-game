@@ -21,7 +21,7 @@ export default class CharacterControllerInput {
   _onKeyDown(event) {
     switch (event.keyCode) {
       case 81: // q
-        if (event.timeStamp - this.lastQKeyPressTimestamp > this.timeInterval) {
+        if (event.timeStamp - this.lastQKeyPressTimestamp > this.timeInterval && !event.repeat) {
           this._keys.magic1 = true
           this.lastQKeyPressTimestamp = event.timeStamp
         } else {

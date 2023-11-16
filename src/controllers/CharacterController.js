@@ -20,9 +20,9 @@ export class CharacterController {
     this.vehicle = new YUKA.Vehicle()
     this.time = new YUKA.Time()
     this.entity = new YUKA.GameEntity()
-    this._input = new CharacterControllerInput(this.vehicle)
-    this._stateMachine = new CharacterFSM(new AnimationsProxy(this._animations), this.entity)
+    this._input = new CharacterControllerInput()
     this.entityManager = new YUKA.EntityManager()
+    this._stateMachine = new CharacterFSM(new AnimationsProxy(this._animations), this.entity, this.vehicle)
     this.FBXLoaderUtil = new FBXLoaderUtil(
       this._stateMachine,
       this._params,
@@ -84,8 +84,10 @@ export class CharacterController {
     this.vehicle.maxSpeed = 50
     this.vehicle.mass = 0.01
     this.vehicle.scale.set(0.05, 0.05, 0.05)
-
-    const arriveBehavior = new YUKA.ArriveBehavior(this.entity.position, 0.1, 0)
+    
+    const arriveBehavior = new YUKA.ArriveBehavior(this.entity.position)
+    arriveBehavior.deceleration = 0.2
+    arriveBehavior.tolerance = 2
     this.vehicle.steering.add(arriveBehavior)
 
     this.entityManager.add(this.vehicle)
@@ -105,11 +107,7 @@ export class CharacterController {
   }
 
   onColide(event) {
-    // const { body, target } = event;
-    // // Check if the collision involves a different body
-    // if (body !== target) {
-    //   // Handle the collision event
-    // }
+    // console.log('collision', event)
   }
 
   async loadCharacter() {
@@ -159,15 +157,15 @@ export class CharacterController {
     if (!this._target) {
       return
     }
+
+    // update animations state machine
+    this._stateMachine.Update(timeInSeconds, this._input)
     
     if (this._input._keys.space) {
       this.vehicle.maxSpeed = 100
     } else {
       this.vehicle.maxSpeed = 50
     }
-
-    // update animations state machine
-    this._stateMachine.Update(timeInSeconds, this._input)
 
     // Update YUKA entities
     const delta = this.time.update().getDelta() // Use the time since the last frame as delta
@@ -178,9 +176,6 @@ export class CharacterController {
     this.body.position.copy(entity.position)
     this.body.quaternion.copy(entity.rotation)
 
-    // update camera
-    this.cameraController.Update(timeInSeconds)
-
     // trigger walking animation
     if (this.vehicle.velocity.length() > 0.1) {
       this._input._keys.forward = true
@@ -189,6 +184,9 @@ export class CharacterController {
     }
 
     this.shootSpell.cast(timeInSeconds)
+
+    // update camera
+    this.cameraController.Update(timeInSeconds)
 
     // update animations
     if (this._mixer) {

@@ -68,8 +68,8 @@ export class Magic1State extends State {
     }
     if (timeElapsed) {
       // stop character from moving while casting
-      const currentPosition = this.parent.entity.position.clone()
-      this.parent.entity.position.set(currentPosition)
+      const currentPosition = this.parent.vehicle.position.clone()
+      this.parent.entity.position.copy(currentPosition)
     }
   }
 }

@@ -52,14 +52,15 @@ export default class BallGenerator {
         object3D.traverse((child) => {
           if (child.type === 'ParticleEmitter') {
             // Store the particle system with each ball
-            const ball = { mesh, body: {...body}, particleSystem: child }
+            const ball = { mesh, body: { ...body }, particleSystem: child }
             this.balls.push(ball)
             // Add the system to the batch renderer
             this.batchSystem.addSystem(child.system)
-            
+
             body.addEventListener('collide', (event) => {
               this.handleCollision(ball)
             })
+            this.cleanUp(ball, 3)
           }
         })
         this.particleSystems = object3D
@@ -71,20 +72,24 @@ export default class BallGenerator {
   }
 
   handleCollision(ball) {
-    setTimeout(() => {
-    this.scene.remove(ball.mesh)
-    
-    if (ball.particleSystem) {
-      this.batchSystem.deleteSystem(ball.particleSystem.system)
-    }
-    
-    this._world.removeBody(ball.body)
-    const index = this.balls.indexOf(ball)
+    this.cleanUp(ball, 2)
+  }
 
-    if (index !== -1) {
-      this.balls.splice(index, 1)
-    }
-    }, 3000)
+  cleanUp(ball, seconds) {
+    setTimeout(() => {
+      this.scene.remove(ball.mesh)
+
+      if (ball.particleSystem) {
+        this.batchSystem.deleteSystem(ball.particleSystem.system)
+      }
+
+      this._world.removeBody(ball.body)
+      const index = this.balls.indexOf(ball)
+
+      if (index !== -1) {
+        this.balls.splice(index, 1)
+      }
+    }, seconds * 1000)
   }
 
   update(timeInSeconds) {
