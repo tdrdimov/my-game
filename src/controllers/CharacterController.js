@@ -2,10 +2,10 @@ import * as THREE from 'three'
 import CharacterControllerInput from '../inputs/CharacterControllerInput.js'
 import { CharacterFSM } from '../states/StateMachine.js'
 import { AnimationsProxy } from '../loaders/AnimationsProxy.js'
-import { FBXLoaderUtil } from '../loaders/FBXLoaderUtil.js'
+import { CharacterLoader } from '../loaders/CharacterLoader.js'
 import * as CANNON from 'cannon-es'
 import * as YUKA from 'yuka'
-import { ShootSpell } from '../states/ShootSpell.js'
+import { ShootSpell } from '../generators/ShootSpell.js'
 
 export class CharacterController {
   constructor(params) {
@@ -23,7 +23,7 @@ export class CharacterController {
     this._input = new CharacterControllerInput()
     this.entityManager = new YUKA.EntityManager()
     this._stateMachine = new CharacterFSM(new AnimationsProxy(this._animations), this.entity, this.vehicle)
-    this.FBXLoaderUtil = new FBXLoaderUtil(
+    this.CharacterLoader = new CharacterLoader(
       this._stateMachine,
       this._params,
       this._animations,
@@ -112,7 +112,7 @@ export class CharacterController {
 
   async loadCharacter() {
     try {
-      return await this.FBXLoaderUtil.loadModels()
+      return await this.CharacterLoader.loadModels()
     } catch (error) {
       console.error('Error loading models:', error)
     }

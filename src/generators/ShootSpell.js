@@ -1,4 +1,4 @@
-import BallGenerator from '../generators/BallGenerator'
+import BallGenerator from './SpellGenerator'
 import * as THREE from 'three'
 
 export class ShootSpell {
