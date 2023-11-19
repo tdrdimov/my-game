@@ -1,10 +1,14 @@
 import { World } from './world/world.js'
-import SocketClient from './sockets/SocketClient';
+import SocketClient from './sockets/SocketClient'
+import * as THREE from 'three'
+import { CannonWorld } from './world/cannonWorld'
 
 let _APP = null
 let _SOCKET = null
 
 window.addEventListener('DOMContentLoaded', () => {
-  _APP = new World()
-  _SOCKET = new SocketClient();
+  const scene = new THREE.Scene()
+  const cannonWorld = new CannonWorld()
+  _SOCKET = new SocketClient(scene, cannonWorld)
+  _APP = new World(_SOCKET.getSocket(), scene, cannonWorld)
 })

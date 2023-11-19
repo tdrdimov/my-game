@@ -1,42 +1,53 @@
 // RoomManager.js
 class RoomManager {
-    constructor() {
-      this.rooms = new Map();
-      this.MAX_PLAYERS_PER_ROOM = 2;
+  constructor() {
+    this.rooms = new Map()
+  }
+
+  createRoom(roomName, socket, maxPlayers = 2) {
+    if (!this.rooms.has(roomName)) {
+      this.rooms.set(roomName, {
+        players: new Set(),
+        maxPlayers
+      })
     }
-  
-    createRoom(roomName) {
-      if (!this.rooms.has(roomName)) {
-        this.rooms.set(roomName, new Set());
-      }
-      return this.rooms.get(roomName);
+    this.joinRoom(socket, roomName)
+    return this.rooms.get(roomName)
+  }
+
+  joinRoom(socket, roomName) {
+    const room = this.rooms.get(roomName)
+    if (room && room.players.size <= room.maxPlayers) {
+      socket.join(roomName)
+      room.players.add(socket.id)
+      socket.room = roomName
+      return true
     }
-  
-    joinRoom(socket, roomName) {
-      const room = this.rooms.get(roomName);
-      if (room && room.size < this.MAX_PLAYERS_PER_ROOM) {
-        socket.join(roomName);
-        room.add(socket.id);
-        socket.room = roomName;
-        return true;
-      }
-      return false;
-    }
-  
-    leaveRoom(socket) {
-      const roomName = socket.room;
-      if (roomName) {
-        socket.leave(roomName);
-        const playersInRoom = this.rooms.get(roomName);
-        if (playersInRoom) {
-          playersInRoom.delete(socket.id);
-          if (playersInRoom.size === 0) {
-            this.rooms.delete(roomName);
-          }
+    return false
+  }
+
+  leaveRoom(socket) {
+    const roomName = socket.room
+    if (roomName) {
+      socket.leave(roomName)
+      const room = this.rooms.get(roomName)
+      if (room) {
+        room.players.delete(socket.id)
+        if (room.players.size === 0) {
+          this.rooms.delete(roomName)
         }
       }
     }
   }
-  
-  export default RoomManager;
-  
+
+  getRoomBySocket(socket) {
+    for (const [roomName, room] of this.rooms) {
+      if (room.players.has(socket.id)) {
+        return roomName
+      }
+    }
+    return null
+  }
+}
+
+export default RoomManager

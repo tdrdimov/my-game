@@ -6,6 +6,20 @@ export class ShootSpell {
     this._params = params
     this.ballGenerator = new BallGenerator(this._params.scene, this._params.cannon)
     this.magic1KeyIsPressed = false
+    this.characterHeight = 15
+
+    this._params.socket.on('shoot-spell', (playerId, spellInfo) => {
+      if (this._params.socket.id !== playerId) {
+        setTimeout(() => {
+          this.ballGenerator.createBall(
+            spellInfo.position.x,
+            spellInfo.position.y + this.characterHeight,
+            spellInfo.position.z,
+            spellInfo.velocity
+          )
+        }, 700)
+      }
+    })
   }
 
   cast(timeInSeconds) {
@@ -27,16 +41,26 @@ export class ShootSpell {
       // Calculate the velocity of the ball based on the player's rotation
       const ballVelocityMagnitude = 30 // Adjust the speed as needed
       const ballVelocity = modelForward.clone().multiplyScalar(-ballVelocityMagnitude)
-      const characterHeight = 15
+
+      // Emit a 'shoot-spell' event with the player's ID and spell information
+      const spellInfo = {
+        position: ballPosition,
+        velocity: ballVelocity
+        // Include any other necessary spell information
+      }
+
       // Create the ball at the calculated position
-      setTimeout(() => {
-        this.ballGenerator.createBall(
-          ballPosition.x,
-          ballPosition.y + characterHeight,
-          ballPosition.z,
-          ballVelocity
-        )
-      }, 700)
+      this._params.socket.emit('shoot-spell', this._params.playerId, spellInfo)
+      if (this._params.playerId === this._params.socket.id) {
+        setTimeout(() => {
+          this.ballGenerator.createBall(
+            spellInfo.position.x,
+            spellInfo.position.y + this.characterHeight,
+            spellInfo.position.z,
+            spellInfo.velocity
+          )
+        }, 700)
+      }
 
       // Set the flag to indicate that the magic1 key is pressed
       this.magic1KeyIsPressed = true

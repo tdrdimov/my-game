@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import CameraFollowController from '../controllers/CameraController.js'
 
-export class FBXLoaderUtil {
+export class CharacterLoader {
   constructor(_stateMachine, params, animations, entityManager) {
     this.loader = new FBXLoader()
     this.modelsPath = '../models/'
@@ -58,7 +58,7 @@ export class FBXLoaderUtil {
           'BreathingIdle.fbx': 'idle',
           'Jump.fbx': 'jump',
           'Standing_2H_Magic_Attack_01.fbx': 'magic1',
-          'Idle.fbx': 'idleWait',
+          'Idle.fbx': 'idleWait'
         }
 
         const loadPromises = []
@@ -70,6 +70,7 @@ export class FBXLoaderUtil {
 
         Promise.all(loadPromises).then(() => {
           this._stateMachine.SetState('idle')
+
           resolve({
             stateMachine: this._stateMachine,
             target: this._target,
