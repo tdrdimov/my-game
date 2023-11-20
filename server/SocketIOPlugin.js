@@ -20,8 +20,7 @@ class SocketIOPlugin {
 
       socket.on('join-room', (roomName) => {
         const room = this.roomManager.createRoom(roomName, socket)
-        
-        
+
         if (!this.players.has(socket.id)) {
           this.players.set(socket.id, { x: 0, y: 0, z: 0 })
           socket.emit('current-players', Array.from(this.players.entries()))
@@ -45,7 +44,11 @@ class SocketIOPlugin {
       })
 
       socket.on('shoot-spell', (playerId, spellInfo) => {
-        socket.to(socket.room).emit('shoot-spell', playerId, spellInfo);
+        socket.to(socket.room).emit('shoot-spell', playerId, spellInfo)
+      })
+
+      socket.on('player-jump', (playerId) => {
+        socket.to(socket.room).emit('player-jump', playerId);
       });
 
       socket.on('leave-room', () => {

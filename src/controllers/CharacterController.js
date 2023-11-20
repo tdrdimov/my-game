@@ -23,15 +23,13 @@ export class CharacterController {
     this.entity = new YUKA.GameEntity()
     this.entity.position.set(0, 0, 0)
     this.entity.id = this.playerId
-    this._input = new CharacterControllerInput(
-      this._params.socket,
-      this._params.playerId
-    )
+    this._input = new CharacterControllerInput(this._params.socket, this._params.playerId)
     this.entityManager = new YUKA.EntityManager()
     this._stateMachine = new CharacterFSM(
       new AnimationsProxy(this._animations),
       this.entity,
-      this.vehicle
+      this.vehicle,
+      this._params.socket
     )
     this.CharacterLoader = new CharacterLoader(
       this._stateMachine,
@@ -116,6 +114,19 @@ export class CharacterController {
       socket: this._params.socket,
       playerId: this.playerId
     })
+
+    this._params.socket.on('shoot-spell', (playerId, spellInfo) => {
+      if (this.playerId === playerId) {
+        this._stateMachine.SetState('magic1')
+      }
+    })
+
+    this._params.socket.on('player-jump', (playerId) => {
+      // Start the jump animation
+      if (this._params.playerId === playerId) {
+        this._stateMachine.SetState('jump')
+      }
+    })
   }
 
   onColide(event) {
@@ -182,6 +193,7 @@ export class CharacterController {
 
     if (this._input._keys.space) {
       this.vehicle.maxSpeed = 100
+      this._params.socket.emit('player-jump', this._params.playerId)
     } else {
       this.vehicle.maxSpeed = 50
     }

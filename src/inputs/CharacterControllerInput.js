@@ -42,10 +42,12 @@ export default class CharacterControllerInput {
         this._keys.right = true
         break
       case 32: // SPACE
-        if (!event.repeat) {
-          this._keys.space = true
-        } else {
-          this._keys.space = false
+        if (this._socket.id === this._playerId) {
+          if (!event.repeat) {
+            this._keys.space = true
+          } else {
+            this._keys.space = false
+          }
         }
         break
       case 16: // SHIFT
