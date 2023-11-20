@@ -4,46 +4,69 @@ import { Camera } from './camera'
 import { Lights } from './lights'
 import { Floor } from './floor'
 import { Canvas } from './canvas'
-import { CannonWorld } from './cannonWorld'
 import { Walls } from './walls'
 import { Torch } from './torch'
 import { Target } from './target'
 export class World {
-  constructor() {
+  constructor(socket, scene, world) {
+    this.socket = socket
+    this._scene = scene
+    this.cannonWorld = world
+    this.players = new Map()
     this._Initialize()
   }
 
   _Initialize() {
-    this._mixers = []
     this._previousRAF = null
-    this.cannonWorld = new CannonWorld()
     this._camera = new Camera().camera
     this.canvas = new Canvas(this._camera)
-    this._scene = new THREE.Scene()
     new Lights(this._scene)
     this.floor = new Floor(this._scene, this.cannonWorld)
     this.walls = new Walls(this._scene, this.cannonWorld)
     this.target = new Target({
       scene: this._scene,
-      world: this.cannonWorld._world,
-    });
-    this._LoadAnimatedModel()
-
+      world: this.cannonWorld._world
+    })
     this.torch1 = new Torch(this._scene, new THREE.Vector3(50, -4, 0))
-    // this.torch2 = new Torch(this._scene, new THREE.Vector3(-100, -4, 0))
-    // this.torch3 = new Torch(this._scene, new THREE.Vector3(100, -4, 0))
+
+    this.socket.on('player-joined', (playerId, initialState) => {
+      // console.log(`Player ${playerId} joined the room`)
+      this._LoadAnimatedModel(playerId, initialState)
+    })
+
+    this.socket.on('current-players', (players) => {
+      players.forEach(([playerId, playerState]) => {
+        if (playerId !== this.socket.id) {
+          this._LoadAnimatedModel(playerId, playerState)
+        }
+      })
+    })
+
+    this.socket.on('player-moved', (playerId, newState) => {
+      // console.log(`Player ${playerId} moved`)
+      if (this.players.has(playerId)) {
+        this.players.get(playerId).updateState(newState)
+      }
+    })
 
     this._RAF()
   }
 
-  _LoadAnimatedModel() {
-    const params = {
-      camera: this._camera,
-      scene: this._scene,
-      renderer: this.canvas._threejs,
-      cannon: this.cannonWorld
+  _LoadAnimatedModel(playerId, initialState) {
+    // Check if a CharacterController instance already exists for the player
+    if (!this.players.has(playerId)) {
+      const params = {
+        camera: this._camera,
+        scene: this._scene,
+        renderer: this.canvas._threejs,
+        cannon: this.cannonWorld,
+        playerId: playerId,
+        socket: this.socket,
+        initialState: initialState
+      }
+      const player = new CharacterController(params)
+      this.players.set(playerId, player)
     }
-    this._controls = new CharacterController(params)
   }
 
   _RAF() {
@@ -51,29 +74,21 @@ export class World {
       if (this._previousRAF === null) {
         this._previousRAF = t
       }
+      const timeElapsed = t - this._previousRAF
+      const timeElapsedS = timeElapsed * 0.001
+
+      // Iterate over all active players and update their controllers
+      for (const [playerId, controller] of this.players) {
+        controller.Update(t, timeElapsedS)
+      }
 
       this._RAF()
 
       this.canvas._threejs.render(this._scene, this._camera)
-      this._Step(t, t - this._previousRAF)
       this._previousRAF = t
 
       this.cannonWorld._world.step(1 / 60, this._previousRAF, 3)
       this.target.update()
-      // this.torch1.updateAnimation(this._previousRAF)
-      // this.torch2.updateAnimation(this._previousRAF)
-      // this.torch3.updateAnimation(this._previousRAF)
     })
-  }
-
-  _Step(t, timeElapsed) {
-    const timeElapsedS = timeElapsed * 0.001
-    if (this._mixers) {
-      this._mixers.map((m) => m.update(timeElapsedS))
-    }
-
-    if (this._controls) {
-      this._controls.Update(t, timeElapsedS)
-    }
   }
 }

@@ -1,7 +1,5 @@
-// vite.config.js
-
-import SocketIOPlugin from './server/SocketIOPlugin';
+import createSocketIOPlugin from './server/SocketIOPlugin';
 
 export default {
-  plugins: [SocketIOPlugin()],
-};
+  plugins: [createSocketIOPlugin()]
+}

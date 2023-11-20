@@ -9,6 +9,7 @@ import { ShootSpell } from '../generators/ShootSpell.js'
 
 export class CharacterController {
   constructor(params) {
+    this.playerId = params.playerId
     this._Init(params)
   }
 
@@ -20,9 +21,16 @@ export class CharacterController {
     this.vehicle = new YUKA.Vehicle()
     this.time = new YUKA.Time()
     this.entity = new YUKA.GameEntity()
-    this._input = new CharacterControllerInput()
+    this.entity.position.set(0, 0, 0)
+    this.entity.id = this.playerId
+    this._input = new CharacterControllerInput(this._params.socket, this._params.playerId)
     this.entityManager = new YUKA.EntityManager()
-    this._stateMachine = new CharacterFSM(new AnimationsProxy(this._animations), this.entity, this.vehicle)
+    this._stateMachine = new CharacterFSM(
+      new AnimationsProxy(this._animations),
+      this.entity,
+      this.vehicle,
+      this._params.socket
+    )
     this.CharacterLoader = new CharacterLoader(
       this._stateMachine,
       this._params,
@@ -84,7 +92,7 @@ export class CharacterController {
     this.vehicle.maxSpeed = 50
     this.vehicle.mass = 0.1
     this.vehicle.scale.set(0.05, 0.05, 0.05)
-    
+
     const arriveBehavior = new YUKA.ArriveBehavior(this.entity.position)
     arriveBehavior.deceleration = 0.2
     arriveBehavior.tolerance = 1
@@ -102,7 +110,22 @@ export class CharacterController {
       cannon: this._params.cannon,
       body: this.body,
       entityManager: this.entityManager,
-      vehicle: this.vehicle
+      vehicle: this.vehicle,
+      socket: this._params.socket,
+      playerId: this.playerId
+    })
+
+    this._params.socket.on('shoot-spell', (playerId, spellInfo) => {
+      if (this.playerId === playerId) {
+        this._stateMachine.SetState('magic1')
+      }
+    })
+
+    this._params.socket.on('player-jump', (playerId) => {
+      // Start the jump animation
+      if (this._params.playerId === playerId) {
+        this._stateMachine.SetState('jump')
+      }
     })
   }
 
@@ -122,10 +145,17 @@ export class CharacterController {
     renderComponent.matrix.copy(entity.worldMatrix)
   }
 
+  updateState(newState) {
+    this.entity.position.copy(newState)
+  }
+
   handleMouseClick(event) {
-    if (!this._target) {
+    if (!this._target || this._params.socket.id !== this._params.playerId) {
       return
     }
+
+    // When the player moves
+    this._params.socket.emit('player-moved', this._params.playerId, this.entity.position)
 
     const mousePosition = new THREE.Vector2()
     mousePosition.x = (event.clientX / window.innerWidth) * 2 - 1
@@ -160,9 +190,10 @@ export class CharacterController {
 
     // update animations state machine
     this._stateMachine.Update(timeInSeconds, this._input)
-    
+
     if (this._input._keys.space) {
       this.vehicle.maxSpeed = 100
+      this._params.socket.emit('player-jump', this._params.playerId)
     } else {
       this.vehicle.maxSpeed = 50
     }
@@ -183,10 +214,12 @@ export class CharacterController {
       this._input._keys.forward = false
     }
 
-    this.shootSpell.cast(timeInSeconds)
-
     // update camera
-    this.cameraController.Update(timeInSeconds)
+    if (this._params.socket.id === this._params.playerId) {
+      this.cameraController.Update(timeInSeconds)
+    }
+
+    this.shootSpell.cast(timeInSeconds)
 
     // update animations
     if (this._mixer) {

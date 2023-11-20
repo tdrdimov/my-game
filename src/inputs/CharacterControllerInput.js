@@ -1,5 +1,7 @@
 export default class CharacterControllerInput {
-  constructor() {
+  constructor(socket, playerId) {
+    this._socket = socket
+    this._playerId = playerId
     this._Init()
   }
 
@@ -21,11 +23,13 @@ export default class CharacterControllerInput {
   _onKeyDown(event) {
     switch (event.keyCode) {
       case 81: // q
-        if (event.timeStamp - this.lastQKeyPressTimestamp > this.timeInterval && !event.repeat) {
-          this._keys.magic1 = true
-          this.lastQKeyPressTimestamp = event.timeStamp
-        } else {
-          this._keys.magic1 = false
+        if (this._socket.id === this._playerId) {
+          if (event.timeStamp - this.lastQKeyPressTimestamp > this.timeInterval && !event.repeat) {
+            this._keys.magic1 = true
+            this.lastQKeyPressTimestamp = event.timeStamp
+          } else {
+            this._keys.magic1 = false
+          }
         }
         break
       case 87: // w
@@ -38,10 +42,12 @@ export default class CharacterControllerInput {
         this._keys.right = true
         break
       case 32: // SPACE
-        if (!event.repeat) {
-          this._keys.space = true
-        } else {
-          this._keys.space = false
+        if (this._socket.id === this._playerId) {
+          if (!event.repeat) {
+            this._keys.space = true
+          } else {
+            this._keys.space = false
+          }
         }
         break
       case 16: // SHIFT

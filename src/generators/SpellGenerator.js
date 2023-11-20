@@ -98,6 +98,7 @@ export default class BallGenerator {
       ball.mesh.position.copy(ball.body.position)
       ball.mesh.quaternion.copy(ball.body.quaternion)
 
+
       if (ball.particleSystem) {
         const ballPosition = ball.body.position.clone()
 
