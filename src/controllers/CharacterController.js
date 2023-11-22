@@ -6,11 +6,12 @@ import { CharacterLoader } from '../loaders/CharacterLoader.js'
 import * as CANNON from 'cannon-es'
 import * as YUKA from 'yuka'
 import { ShootSpell } from '../generators/ShootSpell.js'
-
+import HealthBar from './HealthBar'
 export class CharacterController {
   constructor(params) {
     this.playerId = params.playerId
     this._Init(params)
+    this.onColide = this.onColide.bind(this)
   }
 
   async _Init(params) {
@@ -18,11 +19,12 @@ export class CharacterController {
     this._world = this._params.cannon._world
     this.raycaster = new THREE.Raycaster()
     this._animations = {}
+
     this.vehicle = new YUKA.Vehicle()
     this.time = new YUKA.Time()
     this.entity = new YUKA.GameEntity()
     this.entity.position.set(0, 0, 0)
-    this.entity.id = this.playerId
+    this.healthBar = new HealthBar(this._params.scene, 100, this.entity.position)
     this._input = new CharacterControllerInput(this._params.socket, this._params.playerId)
     this.entityManager = new YUKA.EntityManager()
     this._stateMachine = new CharacterFSM(
@@ -73,16 +75,15 @@ export class CharacterController {
       }
     })
 
+    const size = 20
     // Cannon.js body
-    const targetSize = 2
-    const shape = new CANNON.Box(
-      new CANNON.Vec3(targetSize * 0.5, targetSize * 0.5, targetSize * 0.5)
-    )
+    const shape = new CANNON.Box(new CANNON.Vec3(3, size, 3))
 
     this.body = new CANNON.Body({
       mass: 1,
       position: new CANNON.Vec3(0, 0, 0),
       shape: shape,
+      type: CANNON.Body.KINEMATIC,
       material: this._target.children[0].material
     })
 
@@ -123,14 +124,27 @@ export class CharacterController {
 
     this._params.socket.on('player-jump', (playerId) => {
       // Start the jump animation
-      if (this._params.playerId === playerId) {
+      if (this.playerId === playerId) {
         this._stateMachine.SetState('jump')
+      }
+    })
+
+    this._params.socket.on('receive-damage', (playerId) => {
+      if (this.playerId === playerId) {
+        this._params.playerHealths[playerId] -= 10
+        this.healthBar.updateHealth(this._params.playerHealths[playerId])
       }
     })
   }
 
   onColide(event) {
-    // console.log('collision', event)
+    const { body } = event
+    if (typeof body.id === 'string' && body.id !== this._params.socket.id) {
+      this._params.socket.emit('receive-damage', this._params.socket.id)
+      this._params.playerHealths[this._params.socket.id] -= 10
+      this.healthBar.updateHealth(this._params.playerHealths[this._params.socket.id])
+    }
+    console.log(this._params.playerHealths)
   }
 
   async loadCharacter() {
@@ -147,6 +161,10 @@ export class CharacterController {
 
   updateState(newState) {
     this.entity.position.copy(newState)
+  }
+
+  updateHealth(newState) {
+    this.healthBar.updatePosition(newState)
   }
 
   handleMouseClick(event) {
@@ -210,6 +228,8 @@ export class CharacterController {
     // trigger walking animation
     if (this.vehicle.velocity.length() > 0.1) {
       this._input._keys.forward = true
+      // write socket logic for player moving
+      this._params.socket.emit('player-moving', this._params.playerId, this.body.position)
     } else {
       this._input._keys.forward = false
     }
@@ -217,6 +237,7 @@ export class CharacterController {
     // update camera
     if (this._params.socket.id === this._params.playerId) {
       this.cameraController.Update(timeInSeconds)
+      this.healthBar.updatePosition(this.body.position)
     }
 
     this.shootSpell.cast(timeInSeconds)

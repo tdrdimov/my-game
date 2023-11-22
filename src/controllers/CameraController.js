@@ -7,7 +7,7 @@ export default class CameraFollowController {
     this.target = target
     this.entityManager = entityManager
     this.renderer = renderer
-    this.distance = 100 // The distance between the character and camera
+    this.distance = 140 // The distance between the character and camera
     this.height = 100 // The height of the camera above the character
     this.Init()
   }
@@ -21,10 +21,11 @@ export default class CameraFollowController {
   }
 
   stickCameraBehindCharacter() {
+    const character = this.entityManager.entities[0]
     const newPosition = new THREE.Vector3()
-    newPosition.x = this.entityManager.entities[0].position.x
-    newPosition.y = this.entityManager.entities[0].position.y
-    newPosition.z = this.entityManager.entities[0].position.z
+    newPosition.x = character.position.x
+    newPosition.y = character.position.y
+    newPosition.z = character.position.z
     const targetPosition = newPosition.clone()
     const cameraOffset = new THREE.Vector3(0, this.height, -this.distance)
 
@@ -32,7 +33,7 @@ export default class CameraFollowController {
 
     const offset = cameraOffset.clone().applyMatrix4(rotationMatrix)
     const cameraPosition = targetPosition.clone().add(offset)
-    const dampingFactor = 0.04
+    const dampingFactor = 0.01
     // Set the camera's position
     this.camera.position.lerp(cameraPosition, dampingFactor)
 

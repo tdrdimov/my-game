@@ -4,7 +4,11 @@ import * as THREE from 'three'
 export class ShootSpell {
   constructor(params) {
     this._params = params
-    this.ballGenerator = new BallGenerator(this._params.scene, this._params.cannon)
+    this.ballGenerator = new BallGenerator(
+      this._params.scene,
+      this._params.cannon,
+      this._params.playerId,
+    )
     this.magic1KeyIsPressed = false
     this.characterHeight = 15
 
@@ -39,7 +43,7 @@ export class ShootSpell {
       const ballPosition = new THREE.Vector3().copy(playerPosition).add(offset)
 
       // Calculate the velocity of the ball based on the player's rotation
-      const ballVelocityMagnitude = 30 // Adjust the speed as needed
+      const ballVelocityMagnitude = 20 // Adjust the speed as needed
       const ballVelocity = modelForward.clone().multiplyScalar(-ballVelocityMagnitude)
 
       // Emit a 'shoot-spell' event with the player's ID and spell information

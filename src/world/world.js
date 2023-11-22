@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import CannonDebugger from 'cannon-es-debugger'
 import { CharacterController } from '../controllers/CharacterController'
 import { Camera } from './camera'
 import { Lights } from './lights'
@@ -13,6 +14,7 @@ export class World {
     this._scene = scene
     this.cannonWorld = world
     this.players = new Map()
+    this.playerHealths = {}
     this._Initialize()
   }
 
@@ -27,15 +29,20 @@ export class World {
       scene: this._scene,
       world: this.cannonWorld._world
     })
+    this.cannonDebugger = new CannonDebugger(this._scene, this.cannonWorld._world, {
+      // options...
+    })
     this.torch1 = new Torch(this._scene, new THREE.Vector3(50, -4, 0))
 
     this.socket.on('player-joined', (playerId, initialState) => {
       // console.log(`Player ${playerId} joined the room`)
+      this.playerHealths[playerId] = 100
       this._LoadAnimatedModel(playerId, initialState)
     })
 
     this.socket.on('current-players', (players) => {
       players.forEach(([playerId, playerState]) => {
+        this.playerHealths[playerId] = 100
         if (playerId !== this.socket.id) {
           this._LoadAnimatedModel(playerId, playerState)
         }
@@ -46,6 +53,13 @@ export class World {
       // console.log(`Player ${playerId} moved`)
       if (this.players.has(playerId)) {
         this.players.get(playerId).updateState(newState)
+      }
+    })
+
+    this.socket.on('player-moving', (playerId, newState) => {
+      // console.log(`Player ${playerId} moved`)
+      if (this.players.has(playerId)) {
+        this.players.get(playerId).updateHealth(newState)
       }
     })
 
@@ -62,7 +76,8 @@ export class World {
         cannon: this.cannonWorld,
         playerId: playerId,
         socket: this.socket,
-        initialState: initialState
+        initialState: initialState,
+        playerHealths: this.playerHealths
       }
       const player = new CharacterController(params)
       this.players.set(playerId, player)
@@ -88,6 +103,7 @@ export class World {
       this._previousRAF = t
 
       this.cannonWorld._world.step(1 / 60, this._previousRAF, 3)
+      // this.cannonDebugger.update()
       this.target.update()
     })
   }

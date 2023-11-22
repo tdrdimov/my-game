@@ -3,8 +3,9 @@ import * as THREE from 'three'
 import { BatchedParticleRenderer, QuarksLoader } from 'three.quarks' // Import only ParticleEmitter
 
 export default class BallGenerator {
-  constructor(scene, cannon) {
+  constructor(scene, cannon, playerId) {
     this.scene = scene
+    this.playerId = playerId
     this._world = cannon._world
     this.balls = []
     this.magicEmitters = []
@@ -16,16 +17,17 @@ export default class BallGenerator {
     // Your existing code for creating cannon.js body and three.js mesh
     const shape = new CANNON.Sphere(2)
     const body = new CANNON.Body({
-      mass: 1,
+      mass: 0,
       position: new CANNON.Vec3(x, y, z),
       shape: shape,
       material: this._world.defaultMaterial,
-      type: CANNON.Body.KINEMATIC,
+      type: CANNON.Body.DYNAMIC,
       allowSleep: false
     })
     body.linearDamping = 0.1
     body.velocity.set(velocity.x, velocity.y, velocity.z)
-
+    body.id = this.playerId
+    
     this._world.addBody(body)
 
     const fireballMaterial = new THREE.MeshStandardMaterial({
@@ -47,7 +49,7 @@ export default class BallGenerator {
       './atom.json',
       (object3D) => {
         object3D.position.set(x, y, z)
-        object3D.scale.set(1, 1, 1)
+        object3D.scale.set(0.3, 0.3, 0.3)
 
         object3D.traverse((child) => {
           if (child.type === 'ParticleEmitter') {
@@ -97,7 +99,6 @@ export default class BallGenerator {
     for (const ball of this.balls) {
       ball.mesh.position.copy(ball.body.position)
       ball.mesh.quaternion.copy(ball.body.quaternion)
-
 
       if (ball.particleSystem) {
         const ballPosition = ball.body.position.clone()

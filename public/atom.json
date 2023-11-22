@@ -275,7 +275,7 @@
           },
           "emissionOverTime": {
             "type": "ConstantValue",
-            "value": 30
+            "value": 230
           },
           "emissionOverDistance": {
             "type": "ConstantValue",

@@ -36,11 +36,14 @@ class SocketIOPlugin {
       })
 
       socket.on('player-moved', (playerId, newState) => {
-        // console.log(`Player ${playerId} moved ${newState}`)
         if (this.players.has(playerId)) {
           this.players.set(playerId, newState)
         }
         socket.to(socket.room).emit('player-moved', playerId, newState)
+      })
+
+      socket.on('player-moving', (playerId, newState) => {
+        socket.to(socket.room).emit('player-moving', playerId, newState)
       })
 
       socket.on('shoot-spell', (playerId, spellInfo) => {
@@ -48,8 +51,12 @@ class SocketIOPlugin {
       })
 
       socket.on('player-jump', (playerId) => {
-        socket.to(socket.room).emit('player-jump', playerId);
-      });
+        socket.to(socket.room).emit('player-jump', playerId)
+      })
+
+      socket.on('receive-damage', (playerId) => {
+        socket.to(socket.room).emit('receive-damage', playerId)
+      })
 
       socket.on('leave-room', () => {
         this.roomManager.leaveRoom(socket)
