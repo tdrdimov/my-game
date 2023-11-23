@@ -112,7 +112,7 @@ export default class BallGenerator {
         ball.particleSystem.position.sub(offset)
       }
     }
-
+    
     this.batchSystem.update(timeInSeconds)
   }
 }

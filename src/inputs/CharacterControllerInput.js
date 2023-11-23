@@ -2,6 +2,8 @@ export default class CharacterControllerInput {
   constructor(socket, playerId) {
     this._socket = socket
     this._playerId = playerId
+    this.isShooting = false
+    this.isJumping = false
     this._Init()
   }
 
@@ -23,9 +25,13 @@ export default class CharacterControllerInput {
   _onKeyDown(event) {
     switch (event.keyCode) {
       case 81: // q
-        if (this._socket.id === this._playerId) {
+        if (this._socket.id === this._playerId && !this.isJumping) {
           if (event.timeStamp - this.lastQKeyPressTimestamp > this.timeInterval && !event.repeat) {
             this._keys.magic1 = true
+            this.isShooting = true
+            setTimeout(() => {
+              this.isShooting = false
+            }, 1800)
             this.lastQKeyPressTimestamp = event.timeStamp
           } else {
             this._keys.magic1 = false
@@ -42,9 +48,13 @@ export default class CharacterControllerInput {
         this._keys.right = true
         break
       case 32: // SPACE
-        if (this._socket.id === this._playerId) {
-          if (!event.repeat) {
+        if (this._socket.id === this._playerId && !this.isShooting) {
+          if (!event.repeat && !this.isJumping) {
             this._keys.space = true
+            this.isJumping = true
+            setTimeout(() => {
+              this.isJumping = false
+            }, 1400)
           } else {
             this._keys.space = false
           }

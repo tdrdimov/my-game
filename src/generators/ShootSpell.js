@@ -11,7 +11,6 @@ export class ShootSpell {
     )
     this.magic1KeyIsPressed = false
     this.characterHeight = 15
-
     this._params.socket.on('shoot-spell', (playerId, spellInfo) => {
       if (this._params.socket.id !== playerId) {
         setTimeout(() => {
@@ -35,7 +34,7 @@ export class ShootSpell {
       const playerQuaternion = modelRotation
 
       // Set the offset for the ball in front of the player
-      const offsetDistance = 10 // Adjust this value based on your preference
+      const offsetDistance = 15 // Adjust this value based on your preference
       const offset = new THREE.Vector3(0, 0, offsetDistance)
       offset.applyQuaternion(playerQuaternion)
 
@@ -43,7 +42,7 @@ export class ShootSpell {
       const ballPosition = new THREE.Vector3().copy(playerPosition).add(offset)
 
       // Calculate the velocity of the ball based on the player's rotation
-      const ballVelocityMagnitude = 20 // Adjust the speed as needed
+      const ballVelocityMagnitude = 100 // Adjust the speed as needed
       const ballVelocity = modelForward.clone().multiplyScalar(-ballVelocityMagnitude)
 
       // Emit a 'shoot-spell' event with the player's ID and spell information
@@ -65,7 +64,7 @@ export class ShootSpell {
           )
         }, 700)
       }
-
+      
       // Set the flag to indicate that the magic1 key is pressed
       this.magic1KeyIsPressed = true
     } else if (!this._params.input._keys.magic1) {

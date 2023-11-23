@@ -19,6 +19,7 @@
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
     "three": "^0.158.0",
+    "three.meshline": "^1.4.0",
     "three.quarks": "^0.11.2",
     "yuka": "^0.7.8"
   }

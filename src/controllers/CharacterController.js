@@ -131,7 +131,7 @@ export class CharacterController {
 
     this._params.socket.on('receive-damage', (playerId) => {
       if (this.playerId === playerId) {
-        this._params.playerHealths[playerId] -= 10
+        this._params.playerHealths[playerId] -= 30
         this.healthBar.updateHealth(this._params.playerHealths[playerId])
       }
     })
@@ -139,12 +139,13 @@ export class CharacterController {
 
   onColide(event) {
     const { body } = event
+    // console.log(body.id)
     if (typeof body.id === 'string' && body.id !== this._params.socket.id) {
       this._params.socket.emit('receive-damage', this._params.socket.id)
-      this._params.playerHealths[this._params.socket.id] -= 10
+      this._params.playerHealths[this._params.socket.id] -= 30
       this.healthBar.updateHealth(this._params.playerHealths[this._params.socket.id])
     }
-    console.log(this._params.playerHealths)
+    // console.log(this._params.playerHealths)
   }
 
   async loadCharacter() {
@@ -164,6 +165,7 @@ export class CharacterController {
   }
 
   updateHealth(newState) {
+    this.healthBar.updateHealth(this._params.playerHealths[this.playerId])
     this.healthBar.updatePosition(newState)
   }
 
@@ -174,6 +176,7 @@ export class CharacterController {
 
     // When the player moves
     this._params.socket.emit('player-moved', this._params.playerId, this.entity.position)
+    
 
     const mousePosition = new THREE.Vector2()
     mousePosition.x = (event.clientX / window.innerWidth) * 2 - 1
@@ -224,12 +227,13 @@ export class CharacterController {
     const entity = this.entityManager.entities[0]
     this.body.position.copy(entity.position)
     this.body.quaternion.copy(entity.rotation)
+    this.healthBar.updatePosition(this.body.position)
 
     // trigger walking animation
     if (this.vehicle.velocity.length() > 0.1) {
       this._input._keys.forward = true
-      // write socket logic for player moving
       this._params.socket.emit('player-moving', this._params.playerId, this.body.position)
+      // write socket logic for player moving
     } else {
       this._input._keys.forward = false
     }
@@ -237,7 +241,6 @@ export class CharacterController {
     // update camera
     if (this._params.socket.id === this._params.playerId) {
       this.cameraController.Update(timeInSeconds)
-      this.healthBar.updatePosition(this.body.position)
     }
 
     this.shootSpell.cast(timeInSeconds)

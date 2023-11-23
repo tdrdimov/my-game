@@ -103,7 +103,7 @@ export class World {
       this._previousRAF = t
 
       this.cannonWorld._world.step(1 / 60, this._previousRAF, 3)
-      // this.cannonDebugger.update()
+      this.cannonDebugger.update()
       this.target.update()
     })
   }

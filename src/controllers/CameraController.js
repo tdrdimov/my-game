@@ -33,7 +33,7 @@ export default class CameraFollowController {
 
     const offset = cameraOffset.clone().applyMatrix4(rotationMatrix)
     const cameraPosition = targetPosition.clone().add(offset)
-    const dampingFactor = 0.01
+    const dampingFactor = 0.03
     // Set the camera's position
     this.camera.position.lerp(cameraPosition, dampingFactor)
 
