@@ -19,7 +19,7 @@ export class CharacterController {
     this._world = this._params.cannon._world
     this.raycaster = new THREE.Raycaster()
     this._animations = {}
-
+    this.damage = 15
     this.vehicle = new YUKA.Vehicle()
     this.time = new YUKA.Time()
     this.entity = new YUKA.GameEntity()
@@ -131,7 +131,7 @@ export class CharacterController {
 
     this._params.socket.on('receive-damage', (playerId) => {
       if (this.playerId === playerId) {
-        this._params.playerHealths[playerId] -= 30
+        this._params.playerHealths[playerId] -= this.damage
         this.healthBar.updateHealth(this._params.playerHealths[playerId])
       }
     })
@@ -142,7 +142,7 @@ export class CharacterController {
     // console.log(body.id)
     if (typeof body.id === 'string' && body.id !== this._params.socket.id) {
       this._params.socket.emit('receive-damage', this._params.socket.id)
-      this._params.playerHealths[this._params.socket.id] -= 30
+      this._params.playerHealths[this._params.socket.id] -= this.damage
       this.healthBar.updateHealth(this._params.playerHealths[this._params.socket.id])
     }
     // console.log(this._params.playerHealths)
@@ -165,7 +165,6 @@ export class CharacterController {
   }
 
   updateHealth(newState) {
-    this.healthBar.updateHealth(this._params.playerHealths[this.playerId])
     this.healthBar.updatePosition(newState)
   }
 
@@ -211,7 +210,7 @@ export class CharacterController {
 
     // update animations state machine
     this._stateMachine.Update(timeInSeconds, this._input)
-
+    this.healthBar.updateHealth(this._params.playerHealths[this.playerId])
     if (this._input._keys.space) {
       this.vehicle.maxSpeed = 100
       this._params.socket.emit('player-jump', this._params.playerId)
