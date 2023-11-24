@@ -1,11 +1,13 @@
 import * as CANNON from 'cannon-es'
 import * as THREE from 'three'
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 
 export class Walls {
   constructor(scene, cannon) {
     this._scene = scene
     this._world = cannon._world
     this._CreateWalls()
+    this._AddDecor(0, -55, -150)
   }
 
   _CreateWalls() {
@@ -53,7 +55,31 @@ export class Walls {
 
     const wallBody = new CANNON.Body({ mass: 0 })
     wallBody.addShape(wallShape)
-    wallBody.position.set(0, wallHeight / 2, 0)
+    wallBody.position.set(0, 70 / 2, 0)
     this._world.addBody(wallBody)
+  }
+
+  _AddDecor(x, y, z) {
+    const loader = new FBXLoader()
+    loader.load(
+      './models/flag.fbx', // Replace with the path to your decor FBX file
+      (fbx) => {
+        // Adjust the position, rotation, and scale of the decor model
+        fbx.position.set(x, y, z)
+        fbx.rotation.x = Math.PI;
+        fbx.rotation.z = Math.PI;
+        fbx.scale.set(0.07, 0.07, 0.07)
+
+        // Add the decor model to the scene
+        this._scene.add(fbx)
+      },
+      (xhr) => {
+        // Loading progress callback
+        // console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+      },
+      (error) => {
+        console.error('Error loading decor FBX model:', error)
+      }
+    )
   }
 }

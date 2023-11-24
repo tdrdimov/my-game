@@ -8,6 +8,7 @@ import { Canvas } from './canvas'
 import { Walls } from './walls'
 import { Torch } from './torch'
 import { Target } from './target'
+import { Sky } from './sky'
 export class World {
   constructor(socket, scene, world) {
     this.socket = socket
@@ -23,17 +24,21 @@ export class World {
     this._camera = new Camera().camera
     this.canvas = new Canvas(this._camera)
     new Lights(this._scene)
+    // this.sky = new Sky(this._scene)
     this.floor = new Floor(this._scene, this.cannonWorld)
     this.walls = new Walls(this._scene, this.cannonWorld)
-    this.target = new Target({
-      scene: this._scene,
-      world: this.cannonWorld._world
-    })
+    // this.target = new Target({
+    //   scene: this._scene,
+    //   world: this.cannonWorld._world
+    // })
     this.cannonDebugger = new CannonDebugger(this._scene, this.cannonWorld._world, {
       // options...
     })
-    this.torch1 = new Torch(this._scene, new THREE.Vector3(50, -4, 0))
 
+    this.torch1 = new Torch(this._scene, new THREE.Vector3(-95, 23, 95), Math.PI * 1.8, { x: 18, z: 12 })
+    this.torch2 = new Torch(this._scene, new THREE.Vector3(95, 23, 95), Math.PI * 1.2, { x: -18, z: 12 })
+    this.torch3 = new Torch(this._scene, new THREE.Vector3(95, 23, -95), Math.PI * -1.2, { x: -18, z: -12 })
+    this.torch2 = new Torch(this._scene, new THREE.Vector3(-95, 23, -95), Math.PI * -1.8, { x: 18, z: -12 })
     this.socket.on('player-joined', (playerId, initialState) => {
       // console.log(`Player ${playerId} joined the room`)
       this.playerHealths[playerId] = 100
@@ -104,7 +109,7 @@ export class World {
 
       this.cannonWorld._world.step(1 / 60, this._previousRAF, 3)
       // this.cannonDebugger.update()
-      this.target.update()
+      // this.target.update()
     })
   }
 }
