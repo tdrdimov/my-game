@@ -31,7 +31,7 @@ export default class CharacterControllerInput {
             this.isShooting = true
             setTimeout(() => {
               this.isShooting = false
-            }, 1800)
+            }, 1500)
             this.lastQKeyPressTimestamp = event.timeStamp
           } else {
             this._keys.magic1 = false

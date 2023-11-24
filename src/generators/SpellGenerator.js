@@ -31,7 +31,7 @@ export default class BallGenerator {
     this._world.addBody(body)
 
     const fireballMaterial = new THREE.MeshStandardMaterial({
-      color: 0xff000000,
+      color: 0xffa500,
       transparent: true,
       opacity: 0
     })

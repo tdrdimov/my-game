@@ -102,14 +102,14 @@ export class World {
         controller.Update(t, timeElapsedS)
       }
 
-      this._RAF()
+      this._previousRAF = t
 
       this.canvas._threejs.render(this._scene, this._camera)
-      this._previousRAF = t
 
       this.cannonWorld._world.step(1 / 60, this._previousRAF, 3)
       // this.cannonDebugger.update()
       // this.target.update()
+      this._RAF()
     })
   }
 }

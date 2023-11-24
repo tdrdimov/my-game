@@ -7,14 +7,22 @@ export class Sky {
   }
 
   _Initialize() {
-    const skyGeometry = new THREE.SphereGeometry(500, 60, 40)
+    const skyGeometry = new THREE.SphereGeometry(250, 100, 40)
     // Load a sky texture
     const textureLoader = new THREE.TextureLoader()
-    textureLoader.load('background.jpg', (texture) => {
+    textureLoader.load('fairy_forest_night.jpg', (texture) => {
       // Create a material with the sky texture
       const skyMaterial = new THREE.MeshBasicMaterial({
         map: texture,
-        side: THREE.BackSide
+        side: THREE.BackSide,
+        // add some fog to the sky
+
+        fog: true,
+        opacity: 0.3,
+        transparent: true,
+        // depthWrite: false,
+        depthTest: true,
+        blending: THREE.AdditiveBlending,
       })
       // Create a mesh with the sky geometry and material
       const skyMesh = new THREE.Mesh(skyGeometry, skyMaterial)

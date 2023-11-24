@@ -71,7 +71,7 @@ export class Torch {
     if (this.lantern.material instanceof THREE.MeshPhongMaterial) {
       // Adjust the emissive color to create a glow effect
       this.lantern.material.emissive = new THREE.Color(0xf7a999);
-      this.lantern.material.emissiveIntensity = 0.6; // Adjust the intensity as needed
+      this.lantern.material.emissiveIntensity = 1; // Adjust the intensity as needed
   }
   }
 }
