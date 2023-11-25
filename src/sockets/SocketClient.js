@@ -11,6 +11,7 @@ export default class SocketClient {
       path: '/socket.io',
     })
     this.setupEventListeners()
+    this.setupErrorHandling()
   }
 
   getSocket() {
@@ -37,5 +38,15 @@ export default class SocketClient {
     // this.socket.on('player-left', (playerId) => {
     //   console.log(`Player ${playerId} left the room`)
     // })
+  }
+
+  setupErrorHandling() {
+    this.socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+    });
+
+    this.socket.on('disconnect', (reason) => {
+      console.error('Socket disconnected:', reason);
+    });
   }
 }
