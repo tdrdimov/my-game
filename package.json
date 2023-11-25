@@ -11,9 +11,6 @@
     "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.3",
-    "@babel/preset-env": "^7.23.3",
-    "@babel/register": "^7.22.15",
     "vite": "^4.4.5"
   },
   "dependencies": {

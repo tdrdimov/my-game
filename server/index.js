@@ -1,7 +1,3 @@
-require('@babel/register')({
-  presets: ['@babel/preset-env'],
-});
-
 const express = require('express')
 const http = require('http')
 const path = require('path')
