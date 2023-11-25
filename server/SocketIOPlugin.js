@@ -9,7 +9,12 @@ class SocketIOPlugin {
   }
 
   configureServer(server) {
-    this.io = new SocketIOServer(server.httpServer)
+    this.io = new SocketIOServer(server.httpServer, {
+      cors: {
+        origin: '*',
+      },
+      path: '/socket.io',
+    })
 
     this.io.on('connection', (socket) => {
       socket.on('disconnect', () => {
