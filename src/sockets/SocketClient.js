@@ -4,7 +4,7 @@ export default class SocketClient {
   constructor() {
     const serverUrl =
       process.env.NODE_ENV === 'production'
-        ? 'https://wizard-duel-cyan.vercel.app' // Replace with your actual Vercel app domain
+        ? window.location.origin // Replace with your actual Vercel app domain
         : 'http://127.0.0.1:5173/' // Your local development server URL
 
     this.socket = io(serverUrl, {
