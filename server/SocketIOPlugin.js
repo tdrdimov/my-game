@@ -81,13 +81,4 @@ class SocketIOPlugin {
   }
 }
 
-module.exports = SocketIOPlugin;
-
-// export default function createSocketIOPlugin() {
-//   const socketIOPlugin = new SocketIOPlugin()
-
-//   return {
-//     name: 'socket-io-plugin',
-//     configureServer: socketIOPlugin.configureServer.bind(socketIOPlugin)
-//   }
-// }
+module.exports = SocketIOPlugin
