@@ -135,7 +135,9 @@ export class CharacterController {
         this.healthBar.updateHealth(this._params.playerHealths[playerId])
         if (this._params.playerHealths[playerId] <= 0) {
           this._stateMachine.SetState('death')
-          alert('You Win!')
+          setTimeout(() => {
+            alert('You Win!')
+          },2000)
         }
       }
     })
