@@ -1,7 +1,7 @@
 const { Server: SocketIOServer } = require('socket.io')
 const RoomManager = require('./RoomManager')
 
-class SocketIOPlugin {
+class SocketIO {
   constructor() {
     this.io = null
     this.roomManager = new RoomManager()
@@ -70,4 +70,4 @@ class SocketIOPlugin {
   }
 }
 
-module.exports = SocketIOPlugin
+module.exports = SocketIO

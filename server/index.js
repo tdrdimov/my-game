@@ -2,7 +2,7 @@ const express = require('express')
 const http = require('http')
 const path = require('path')
 const cors = require('cors')
-const SocketIOPlugin = require('./SocketIO') // Adjust the path accordingly
+const SocketIO = require('./SocketIO') // Adjust the path accordingly
 
 const app = express()
 
@@ -14,9 +14,8 @@ const staticPath = path.join(__dirname, '../dist')
 app.use(express.static(staticPath))
 
 const server = http.createServer(app)
-console.log(SocketIOPlugin)
 // Use the SocketIOPlugin to configure Socket.io
-const socketIOPlugin = new SocketIOPlugin()
+const socketIOPlugin = new SocketIO()
 socketIOPlugin.configureServer({ httpServer: server })
 
 const PORT = process.env.PORT || 3000

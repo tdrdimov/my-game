@@ -42,7 +42,7 @@ export class ShootSpell {
       const ballPosition = new THREE.Vector3().copy(playerPosition).add(offset)
 
       // Calculate the velocity of the ball based on the player's rotation
-      const ballVelocityMagnitude = 20 // Adjust the speed as needed
+      const ballVelocityMagnitude = 40 // Adjust the speed as needed
       const ballVelocity = modelForward.clone().multiplyScalar(-ballVelocityMagnitude)
 
       // Emit a 'shoot-spell' event with the player's ID and spell information
