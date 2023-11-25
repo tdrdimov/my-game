@@ -4,7 +4,7 @@ export default class SocketClient {
   constructor() {
     const serverUrl =
       process.env.NODE_ENV === 'production'
-        ? 'https://your-vercel-app.vercel.app' // Replace with your actual Vercel app domain
+        ? 'https://wizard-duel-9mwyte1h6-tdrdimov.vercel.app/' // Replace with your actual Vercel app domain
         : 'http://127.0.0.1:5173/' // Your local development server URL
 
     this.socket = io(serverUrl)
