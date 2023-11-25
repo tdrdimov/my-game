@@ -14,9 +14,9 @@ const staticPath = path.join(__dirname, '../dist')
 app.use(express.static(staticPath))
 
 const server = http.createServer(app)
-
+console.log(SocketIOPlugin)
 // Use the SocketIOPlugin to configure Socket.io
-const socketIOPlugin = SocketIOPlugin.default()
+const socketIOPlugin = new SocketIOPlugin()
 socketIOPlugin.configureServer({ httpServer: server })
 
 const PORT = process.env.PORT || 3000
