@@ -1,3 +1,7 @@
+require('@babel/register')({
+  presets: ['@babel/preset-env'],
+});
+
 const express = require('express')
 const http = require('http')
 const path = require('path')
@@ -16,7 +20,7 @@ app.use(express.static(staticPath))
 const server = http.createServer(app)
 
 // Use the SocketIOPlugin to configure Socket.io
-const socketIOPlugin = new SocketIOPlugin()
+const socketIOPlugin = SocketIOPlugin.default()
 socketIOPlugin.configureServer({ httpServer: server })
 
 const PORT = process.env.PORT || 3000
