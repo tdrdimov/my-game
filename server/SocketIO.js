@@ -1,7 +1,3 @@
-// import { Server as SocketIOServer } from 'socket.io';
-// import RoomManager from './RoomManager';
-
-// write pure node code to require the imported modules
 const { Server: SocketIOServer } = require('socket.io')
 const RoomManager = require('./RoomManager')
 

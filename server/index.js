@@ -2,7 +2,7 @@ const express = require('express')
 const http = require('http')
 const path = require('path')
 const cors = require('cors')
-const SocketIOPlugin = require('./SocketIOPlugin') // Adjust the path accordingly
+const SocketIOPlugin = require('./SocketIO') // Adjust the path accordingly
 
 const app = express()
 

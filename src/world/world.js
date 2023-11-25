@@ -35,10 +35,10 @@ export class World {
       // options...
     })
 
-    this.torch1 = new Torch(this._scene, new THREE.Vector3(-95, 23, 95), Math.PI * 1.8, { x: 18, z: 12 })
-    this.torch2 = new Torch(this._scene, new THREE.Vector3(95, 23, 95), Math.PI * 1.2, { x: -18, z: 12 })
-    this.torch3 = new Torch(this._scene, new THREE.Vector3(95, 23, -95), Math.PI * -1.2, { x: -18, z: -12 })
-    this.torch2 = new Torch(this._scene, new THREE.Vector3(-95, 23, -95), Math.PI * -1.8, { x: 18, z: -12 })
+    // this.torch1 = new Torch(this._scene, new THREE.Vector3(-95, 23, 95), Math.PI * 1.8, { x: 18, z: 12 })
+    // this.torch2 = new Torch(this._scene, new THREE.Vector3(95, 23, 95), Math.PI * 1.2, { x: -18, z: 12 })
+    // this.torch3 = new Torch(this._scene, new THREE.Vector3(95, 23, -95), Math.PI * -1.2, { x: -18, z: -12 })
+    // this.torch2 = new Torch(this._scene, new THREE.Vector3(-95, 23, -95), Math.PI * -1.8, { x: 18, z: -12 })
     this.socket.on('player-joined', (playerId, initialState) => {
       // console.log(`Player ${playerId} joined the room`)
       this.playerHealths[playerId] = 100

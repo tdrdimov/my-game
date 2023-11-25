@@ -6,8 +6,8 @@ export class Walls {
   constructor(scene, cannon) {
     this._scene = scene
     this._world = cannon._world
-    this._CreateWalls()
-    this._AddDecor(0, -55, -150)
+    // this._CreateWalls()
+    // this._AddDecor(0, -55, -150)
   }
 
   _CreateWalls() {
