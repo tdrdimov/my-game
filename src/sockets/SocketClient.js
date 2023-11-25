@@ -7,7 +7,9 @@ export default class SocketClient {
         ? 'https://wizard-duel-cyan.vercel.app' // Replace with your actual Vercel app domain
         : 'http://127.0.0.1:5173/' // Your local development server URL
 
-    this.socket = io(serverUrl)
+    this.socket = io(serverUrl, {
+      path: '/socket.io',
+    })
     this.setupEventListeners()
   }
 
