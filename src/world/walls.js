@@ -62,7 +62,7 @@ export class Walls {
   _AddDecor(x, y, z) {
     const loader = new FBXLoader()
     loader.load(
-      './models/flag.fbx', // Replace with the path to your decor FBX file
+      '/models/flag.fbx', // Replace with the path to your decor FBX file
       (fbx) => {
         // Adjust the position, rotation, and scale of the decor model
         fbx.position.set(x, y, z)

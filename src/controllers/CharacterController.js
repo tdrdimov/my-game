@@ -133,6 +133,10 @@ export class CharacterController {
       if (this.playerId === playerId) {
         this._params.playerHealths[playerId] -= this.damage
         this.healthBar.updateHealth(this._params.playerHealths[playerId])
+        if (this._params.playerHealths[playerId] <= 0) {
+          this._stateMachine.SetState('death')
+          alert('You Win!')
+        }
       }
     })
   }
@@ -145,7 +149,10 @@ export class CharacterController {
       this._params.playerHealths[this._params.socket.id] -= this.damage
       this.healthBar.updateHealth(this._params.playerHealths[this._params.socket.id])
     }
-    // console.log(this._params.playerHealths)
+
+    if (this._params.playerHealths[this._params.socket.id] <= 0) {
+      this._stateMachine.SetState('death')
+    }
   }
 
   async loadCharacter() {
@@ -169,13 +176,16 @@ export class CharacterController {
   }
 
   handleMouseClick(event) {
-    if (!this._target || this._params.socket.id !== this._params.playerId) {
+    if (
+      !this._target ||
+      this._params.socket.id !== this._params.playerId ||
+      this._params.playerHealths[this._params.playerId] <= 0
+    ) {
       return
     }
 
     // When the player moves
     this._params.socket.emit('player-moved', this._params.playerId, this.entity.position)
-    
 
     const mousePosition = new THREE.Vector2()
     mousePosition.x = (event.clientX / window.innerWidth) * 2 - 1

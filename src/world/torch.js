@@ -18,7 +18,7 @@ export class Torch {
 
     // Load FBX model
     loader.load(
-      '../models/torch.fbx',
+      '/models/torch.fbx',
       (fbx) => {
         fbx.position.copy(this._position)
         fbx.scale.set(3, 3, 3)

@@ -3,6 +3,7 @@ import { WalkState } from './WalkState.js'
 import { JumpState } from './JumpState.js'
 import { IdleWaitState } from './IdleWaitState.js'
 import { Magic1State } from './Magic1State.js'
+import { DeathState } from './DeathState.js'
 export class FiniteStateMachine {
   constructor() {
     this._states = {}
@@ -50,5 +51,6 @@ export class CharacterFSM extends FiniteStateMachine {
     this._AddState('jump', JumpState)
     this._AddState('idleWait', IdleWaitState)
     this._AddState('magic1', Magic1State)
+    this._AddState('death', DeathState)
   }
 }

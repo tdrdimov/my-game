@@ -1,11 +1,13 @@
 import * as CANNON from 'cannon-es'
 import * as THREE from 'three'
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 
 export class Floor {
   constructor(scene, cannon) {
     this._scene = scene
     this._world = cannon._world
     this._CreateFloor()
+    // this._AddDecor(0, -25, 0)
   }
 
   _CreateFloor() {
@@ -28,7 +30,7 @@ export class Floor {
       normalMap: normalMapTexture,
       displacementMap: displacementMapTexture,
       aoMap: ambientOcclusionTexture,
-      side: THREE.DoubleSide
+      side: THREE.BackSide
     })
     const plane = new THREE.Mesh(planeGeometry, planeMaterial)
     plane.name = 'floor'
@@ -43,5 +45,24 @@ export class Floor {
     floorBody.addShape(floorShape)
     floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5)
     this._world.addBody(floorBody)
+  }
+
+  _AddDecor(x, y, z) {
+    const loader = new FBXLoader()
+    loader.load(
+      '/models/ring.fbx',
+      (fbx) => {
+        fbx.position.set(x, y, z)
+        fbx.scale.set(180, 180, 180)
+        fbx.rotation.y = Math.PI * 0.5
+        this._scene.add(fbx)
+      },
+      (xhr) => {
+        // console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+      },
+      (error) => {
+        console.error('Error loading FBX model:', error)
+      }
+    )
   }
 }

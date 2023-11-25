@@ -5,8 +5,8 @@ import CameraFollowController from '../controllers/CameraController.js'
 export class CharacterLoader {
   constructor(_stateMachine, params, animations, entityManager) {
     this.loader = new FBXLoader()
-    this.modelsPath = '../models/'
-    this.animationsPath = '../animations/'
+    this.modelsPath = '/models/'
+    this.animationsPath = '/animations/'
     this._stateMachine = _stateMachine
     this._params = params
     this._animations = animations
@@ -58,7 +58,8 @@ export class CharacterLoader {
           'BreathingIdle.fbx': 'idle',
           'Jump.fbx': 'jump',
           'Standing_2H_Magic_Attack_01.fbx': 'magic1',
-          'Idle.fbx': 'idleWait'
+          'Idle.fbx': 'idleWait',
+          'death.fbx': 'death'
         }
 
         const loadPromises = []

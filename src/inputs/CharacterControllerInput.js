@@ -16,7 +16,8 @@ export default class CharacterControllerInput {
       left: false,
       right: false,
       space: false,
-      shift: false
+      shift: false,
+      death: false
     }
     document.addEventListener('keydown', (e) => this._onKeyDown(e), false)
     document.addEventListener('keyup', (e) => this._onKeyUp(e), false)
@@ -54,7 +55,7 @@ export default class CharacterControllerInput {
             this.isJumping = true
             setTimeout(() => {
               this.isJumping = false
-            }, 1400)
+            }, 1200)
           } else {
             this._keys.space = false
           }
