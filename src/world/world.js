@@ -7,8 +7,8 @@ import { Floor } from './floor'
 import { Canvas } from './canvas'
 import { Walls } from './walls'
 import { Torch } from './torch'
-import { Target } from './target'
-import { Sky } from './sky'
+// import { Target } from './target'
+// import { Sky } from './sky'
 export class World {
   constructor(socket, scene, world) {
     this.socket = socket
