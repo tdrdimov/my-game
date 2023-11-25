@@ -1,6 +1,5 @@
 import { Server as SocketIOServer } from 'socket.io'
 import RoomManager from './RoomManager'
-import * as THREE from 'three'
 
 class SocketIOPlugin {
   constructor() {

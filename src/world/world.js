@@ -105,9 +105,8 @@ export class World {
       this._previousRAF = t
 
       this.canvas._threejs.render(this._scene, this._camera)
-
       this.cannonWorld._world.step(1 / 60, this._previousRAF, 3)
-      this.cannonDebugger.update()
+      // this.cannonDebugger.update()
       // this.target.update()
       this._RAF()
     })

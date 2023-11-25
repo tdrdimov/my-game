@@ -63,6 +63,17 @@ export class Magic1State extends State {
   }
 
   Update(timeElapsed, input) {
+    const action = this._parent._proxy._animations['magic1'].action
+    const endAction = this._parent._proxy._animations['idle'].action // The animation that represents the end pose
+    const nearEnd = action._clip.duration * 0.9 // 90% of the animation duration
+
+    if (action.time >= nearEnd) {
+      const duration = 0.2 // The duration of the blend
+      action.paused = true
+      this._parent.SetState('idle')
+      endAction.reset().fadeIn(duration).play()
+    }
+
     if (input._keys.forward && !timeElapsed) {
       this._parent.SetState('walk')
     }

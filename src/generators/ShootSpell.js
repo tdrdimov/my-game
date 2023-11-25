@@ -20,7 +20,7 @@ export class ShootSpell {
             spellInfo.position.z,
             spellInfo.velocity
           )
-        }, 700)
+        }, 800)
       }
     })
   }
@@ -62,7 +62,7 @@ export class ShootSpell {
             spellInfo.position.z,
             spellInfo.velocity
           )
-        }, 700)
+        }, 800)
       }
       
       // Set the flag to indicate that the magic1 key is pressed
