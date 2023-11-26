@@ -16,7 +16,7 @@ export default class CameraFollowController {
     // this.controlCameraWithMouse()
   }
 
-  Update() {
+  Update(timeElapsed) {
     this.stickCameraBehindCharacter()
   }
 

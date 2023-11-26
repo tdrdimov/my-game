@@ -32,11 +32,11 @@ export default class BallGenerator {
 
     const fireballMaterial = new THREE.MeshStandardMaterial({
       color: 0xffa500,
-      // transparent: true,
-      // opacity: 0
+      transparent: true,
+      opacity: 0
     })
 
-    const fireballGeometry = new THREE.SphereGeometry(2, 32, 32)
+    const fireballGeometry = new THREE.SphereGeometry(0, 32, 32)
     const mesh = new THREE.Mesh(fireballGeometry, fireballMaterial)
     mesh.castShadow = true
     mesh.position.set(x, y, z)
@@ -66,7 +66,7 @@ export default class BallGenerator {
           }
         })
         this.particleSystems = object3D
-        // this.scene.add(this.particleSystems)
+        this.scene.add(this.particleSystems)
       },
       () => {},
       () => {}

@@ -89,7 +89,7 @@ export class CharacterController {
 
     // YUKA vehicle configuration
     this.vehicle.setRenderComponent(this._target, this.sync)
-    this.vehicle.position.set(0, 0, 0)
+    // this.vehicle.position.set(0, 0, 0)
     this.vehicle.maxSpeed = 50
     this.vehicle.mass = 0.1
     this.vehicle.scale.set(0.05, 0.05, 0.05)
@@ -137,7 +137,7 @@ export class CharacterController {
           this._stateMachine.SetState('death')
           setTimeout(() => {
             alert('You Win!')
-          },2000)
+          }, 2000)
         }
       }
     })

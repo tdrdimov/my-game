@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
-
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 export class Torch {
   constructor(scene, position, rotation, lightOffset) {
     this._scene = scene
@@ -14,25 +14,24 @@ export class Torch {
   }
 
   _LoadModel() {
-    const loader = new FBXLoader()
+    const loader = new GLTFLoader()
 
-    // Load FBX model
+    // Load GLB model
     loader.load(
-      '/models/torch.fbx',
-      (fbx) => {
-        fbx.position.copy(this._position)
-        fbx.scale.set(3, 3, 3)
-        fbx.rotation.y = this._rotation
-        this.lantern = fbx.children[0].children[0].children[4].children[0]
+      '/models/lantern.glb',
+      (gltf) => {
+        const model = gltf.scene
+        model.position.copy(this._position)
+        model.scale.set(2.3, 2.3, 2.3)
+        model.rotation.y = this._rotation
+        this._scene.add(model)
         this._CreateLight()
-        this._CreateLanternGlow()
-        this._scene.add(fbx)
       },
       (xhr) => {
         // console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
       },
       (error) => {
-        console.error('Error loading FBX model:', error)
+        console.error('Error loading GLB model:', error)
       }
     )
   }
@@ -42,11 +41,11 @@ export class Torch {
   }
 
   _CreateLight() {
-    const helper = new THREE.SpotLightHelper(this.spotLight, 0xffffff)
+    // const helper = new THREE.SpotLightHelper(this.spotLight, 0xffffff)
     // this._scene.add(helper)
     this.spotLight.position.set(
       this._position.x + this.lightOffset.x,
-      26,
+      24.5,
       this._position.z - this.lightOffset.z
     )
     this.spotLight.target.position.set(
@@ -58,20 +57,5 @@ export class Torch {
 
     this._scene.add(this.spotLight)
     this._scene.add(this.spotLight.target)
-  }
-
-  _CreateLanternGlow() {
-    this.pointLight.position.copy(
-      this._position.x + this.lightOffset.x,
-      40,
-      this._position.z - this.lightOffset.z
-    )
-    this._scene.add(this.pointLight)
-
-    if (this.lantern.material instanceof THREE.MeshPhongMaterial) {
-      // Adjust the emissive color to create a glow effect
-      this.lantern.material.emissive = new THREE.Color(0xf7a999);
-      this.lantern.material.emissiveIntensity = 1; // Adjust the intensity as needed
-  }
   }
 }

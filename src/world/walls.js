@@ -6,12 +6,12 @@ export class Walls {
   constructor(scene, cannon) {
     this._scene = scene
     this._world = cannon._world
-    // this._CreateWalls()
-    // this._AddDecor(0, -55, -150)
+    this._CreateWalls()
+    this._AddDecor(0, -55, -100)
   }
 
   _CreateWalls() {
-    const planeWidth = 300
+    const planeWidth = 200
     const wallHeight = 70
 
     // Create walls using LatheGeometry

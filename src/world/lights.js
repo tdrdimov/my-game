@@ -8,7 +8,7 @@ export class Lights {
   }
 
   _CreateLights() {
-    let light = new THREE.AmbientLight(0xe3d4fe, 4.25)
+    let light = new THREE.AmbientLight(0xe3d4fe, 1.25)
     this._scene.add(light)
   }
 }
