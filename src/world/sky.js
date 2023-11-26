@@ -7,27 +7,66 @@ export class Sky {
   }
 
   _Initialize() {
-    const skyGeometry = new THREE.SphereGeometry(250, 100, 40)
-    // Load a sky texture
-    const textureLoader = new THREE.TextureLoader()
-    textureLoader.load('fairy_forest_night.jpg', (texture) => {
-      // Create a material with the sky texture
-      const skyMaterial = new THREE.MeshBasicMaterial({
-        map: texture,
-        side: THREE.BackSide,
-        // add some fog to the sky
+    // Create a basic geometry for the particles (for example, points in 3D space)
+    this.particleGeometry = new THREE.BufferGeometry()
 
-        fog: true,
-        opacity: 0.3,
-        transparent: true,
-        // depthWrite: false,
-        depthTest: true,
-        blending: THREE.AdditiveBlending,
-      })
-      // Create a mesh with the sky geometry and material
-      const skyMesh = new THREE.Mesh(skyGeometry, skyMaterial)
-      // Add the sky mesh to the scene
-      this._scene.add(skyMesh)
+    const textureLoader = new THREE.TextureLoader()
+    const leafTexture = textureLoader.load('./sparkle.png')
+    // leafTexture.flipY = false
+
+    const particleMaterial = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 1.2,
+      map: leafTexture,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
     })
+    this.areaRange = 300
+    // Add positions for the particles
+    const particlePositions = new Float32Array(600 * 3) // number of particles
+    for (let i = 0; i < particlePositions.length; i += 3) {
+      particlePositions[i] = (Math.random() - 0.5) * (this.areaRange + this.areaRange) // X position
+      particlePositions[i + 1] = (Math.random() - 0.5) * this.areaRange // Y position
+      particlePositions[i + 2] = (Math.random() - 0.5) * (this.areaRange + 50) // Z position
+    }
+
+    // Add velocities for the particles
+    const particleVelocities = new Float32Array(1000 * 3) // 1000 particles
+    for (let i = 0; i < particleVelocities.length; i += 3) {
+      particleVelocities[i] = (Math.random() - 0.5) * 0.02 // X velocity
+      particleVelocities[i + 1] = -Math.random() * 0.02 // Y velocity (negative for falling down)
+      particleVelocities[i + 2] = (Math.random() - 0.5) * 0.02 // Z velocity
+    }
+
+    this.particleGeometry.setAttribute('velocity', new THREE.BufferAttribute(particleVelocities, 3))
+
+    this.particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3))
+    this.particleGeometry.attributes.position.needsUpdate = true // Tell Three.js to update the positions
+    // Create the particle system
+    const particles = new THREE.Points(this.particleGeometry, particleMaterial)
+
+    // Add the particle system to the scene
+    this._scene.add(particles)
+  }
+
+  Update() {
+    const positions = this.particleGeometry.attributes.position.array
+    const velocities = this.particleGeometry.attributes.velocity.array
+
+    for (let i = 0; i < positions.length; i += 3) {
+      positions[i] += velocities[i] // Update X position
+      positions[i + 1] += velocities[i + 1] // Update Y position
+      positions[i + 2] += velocities[i + 2] // Update Z position
+
+      // If the particle has fallen below the ground (Y position less than 0), reset it to the top
+      if (positions[i + 1] < 0) {
+        positions[i] = (Math.random() - 0.5) * (this.areaRange + this.areaRange) // X position
+        positions[i + 1] = this.areaRange // Y position
+        positions[i + 2] = (Math.random() - 0.5) * (this.areaRange + 50) // Z position
+      }
+    }
+
+    this.particleGeometry.attributes.position.needsUpdate = true // Tell Three.js to update the positions
   }
 }

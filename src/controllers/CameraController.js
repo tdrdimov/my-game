@@ -7,8 +7,8 @@ export default class CameraFollowController {
     this.target = target
     this.entityManager = entityManager
     this.renderer = renderer
-    this.distance = 100 // The distance between the character and camera
-    this.height = 60 // The height of the camera above the character
+    this.distance = 60 // The distance between the character and camera
+    this.height = 140 // The height of the camera above the character
     this.Init()
   }
 
@@ -33,7 +33,7 @@ export default class CameraFollowController {
 
     const offset = cameraOffset.clone().applyMatrix4(rotationMatrix)
     const cameraPosition = targetPosition.clone().add(offset)
-    const dampingFactor = 0.02
+    const dampingFactor = 0.1
     // Set the camera's position
     this.camera.position.lerp(cameraPosition, dampingFactor)
 

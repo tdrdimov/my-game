@@ -44,6 +44,8 @@ export class IdleWaitState extends State {
       this._parent.SetState('walk_back');
     } else if (input._keys.space) {
       this._parent.SetState('jump')
+    } else if (input._keys.magic1) {
+      this._parent.SetState('magic1')
     }
   }
 }

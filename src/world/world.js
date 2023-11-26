@@ -7,7 +7,7 @@ import { Floor } from './floor'
 import { Canvas } from './canvas'
 import { Walls } from './walls'
 import { Torch } from './torch'
-// import { Sky } from './sky'
+import { Sky } from './sky'
 export class World {
   constructor(socket, scene, world) {
     this.socket = socket
@@ -23,15 +23,27 @@ export class World {
     this._camera = new Camera().camera
     this.canvas = new Canvas(this._camera)
     new Lights(this._scene)
-    // this.sky = new Sky(this._scene)
+    this.sky = new Sky(this._scene)
     this.floor = new Floor(this._scene, this.cannonWorld)
     this.walls = new Walls(this._scene, this.cannonWorld)
     this.cannonDebugger = new CannonDebugger(this._scene, this.cannonWorld._world, {})
 
-    this.torch1 = new Torch(this._scene, new THREE.Vector3(-65, 0, 65), Math.PI * -1.2, { x: 8, z: 12 })
-    this.torch2 = new Torch(this._scene, new THREE.Vector3(65, 0, 65), Math.PI * 1.2, { x: -8, z: 12 })
-    this.torch3 = new Torch(this._scene, new THREE.Vector3(65, 0, -65), Math.PI * 1.8, { x: -8, z: -6 })
-    this.torch2 = new Torch(this._scene, new THREE.Vector3(-65, 0, -65), Math.PI * -1.8, { x: 8, z: -6 })
+    this.torch1 = new Torch(this._scene, new THREE.Vector3(-65, 0, 65), Math.PI * -1.2, {
+      x: 8,
+      z: 12
+    })
+    this.torch2 = new Torch(this._scene, new THREE.Vector3(65, 0, 65), Math.PI * 1.2, {
+      x: -8,
+      z: 12
+    })
+    this.torch3 = new Torch(this._scene, new THREE.Vector3(65, 0, -65), Math.PI * 1.8, {
+      x: -8,
+      z: -6
+    })
+    this.torch2 = new Torch(this._scene, new THREE.Vector3(-65, 0, -65), Math.PI * -1.8, {
+      x: 8,
+      z: -6
+    })
 
     this.socket.on('player-joined', (playerId, initialState) => {
       this.playerHealths[playerId] = 100
@@ -96,6 +108,7 @@ export class World {
 
       this.canvas._threejs.render(this._scene, this._camera)
       this.cannonWorld._world.step(1 / 60, this._previousRAF, 3)
+      this.sky.Update(timeElapsedS)
       // this.cannonDebugger.update()
       this._RAF()
     })

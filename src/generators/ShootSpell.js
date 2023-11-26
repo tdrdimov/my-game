@@ -4,6 +4,7 @@ import * as THREE from 'three'
 export class ShootSpell {
   constructor(params) {
     this._params = params
+    this.createBallDelay = 600
     this.ballGenerator = new BallGenerator(
       this._params.scene,
       this._params.cannon,
@@ -20,7 +21,7 @@ export class ShootSpell {
             spellInfo.position.z,
             spellInfo.velocity
           )
-        }, 800)
+        }, this.createBallDelay)
       }
     })
   }
@@ -42,7 +43,7 @@ export class ShootSpell {
       const ballPosition = new THREE.Vector3().copy(playerPosition).add(offset)
 
       // Calculate the velocity of the ball based on the player's rotation
-      const ballVelocityMagnitude = 40 // Adjust the speed as needed
+      const ballVelocityMagnitude = 120 // Adjust the speed as needed
       const ballVelocity = modelForward.clone().multiplyScalar(-ballVelocityMagnitude)
 
       // Emit a 'shoot-spell' event with the player's ID and spell information
@@ -62,7 +63,7 @@ export class ShootSpell {
             spellInfo.position.z,
             spellInfo.velocity
           )
-        }, 800)
+        }, this.createBallDelay)
       }
       
       // Set the flag to indicate that the magic1 key is pressed

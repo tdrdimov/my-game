@@ -17,6 +17,7 @@ export class Magic1State extends State {
 
   Enter(prevState) {
     const curAction = this._parent._proxy._animations['magic1'].action
+    
     const mixer = curAction.getMixer()
     mixer.addEventListener('finished', this._FinishedCallback)
 
@@ -64,8 +65,9 @@ export class Magic1State extends State {
 
   Update(timeElapsed, input) {
     const action = this._parent._proxy._animations['magic1'].action
+    action.timeScale = 1.4
     const endAction = this._parent._proxy._animations['idle'].action // The animation that represents the end pose
-    const nearEnd = action._clip.duration * 0.9 // 90% of the animation duration
+    const nearEnd = action._clip.duration * 0.8 // 90% of the animation duration
 
     if (action.time >= nearEnd) {
       const duration = 0.2 // The duration of the blend
