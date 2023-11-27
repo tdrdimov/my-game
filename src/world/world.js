@@ -25,6 +25,7 @@ export class World {
     new Lights(this._scene)
     this.sky = new Sky(this._scene)
     this.floor = new Floor(this._scene, this.cannonWorld)
+    this.underfloor = new Floor(this._scene, this.cannonWorld, new THREE.Vector3(0, -100, 0), 700, 700, true)
     this.walls = new Walls(this._scene, this.cannonWorld)
     this.cannonDebugger = new CannonDebugger(this._scene, this.cannonWorld._world, {})
 

@@ -1,11 +1,9 @@
 import * as THREE from 'three'
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 export class Torch {
   constructor(scene, position, rotation, lightOffset) {
     this._scene = scene
     this.spotLight = new THREE.SpotLight(0xf7a999, 400)
-    this.pointLight = new THREE.PointLight(0xff8269, 1, 100, 2)
     this._position = position
     this._rotation = rotation
     this.lightOffset = lightOffset
@@ -34,10 +32,6 @@ export class Torch {
         console.error('Error loading GLB model:', error)
       }
     )
-  }
-
-  positionLight(position) {
-    this.pointLight.position.z = position
   }
 
   _CreateLight() {

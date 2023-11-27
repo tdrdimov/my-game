@@ -8,6 +8,12 @@ let _SOCKET = null
 
 window.addEventListener('DOMContentLoaded', () => {
   const scene = new THREE.Scene()
+  const fogColor = 0xffa07a
+  const fogNear = 200
+  const fogFar = 500
+
+  scene.fog = new THREE.Fog(fogColor, fogNear, fogFar)
+
   const cannonWorld = new CannonWorld()
   _SOCKET = new SocketClient(scene, cannonWorld)
   _APP = new World(_SOCKET.getSocket(), scene, cannonWorld)

@@ -11,7 +11,7 @@ class HealthBar {
     line.setGeometry(lineGeometry)
 
     const material = new MeshLineMaterial({
-      color: new THREE.Color(0x00ff00),
+      color: new THREE.Color(0x6acf48),
       depthTest: false,
       lineWidth: 0.7 // Adjust this value to change the thickness of the line
     }) // Green color
@@ -27,7 +27,7 @@ class HealthBar {
     maxHealthLine.setGeometry(lineGeometry)
 
     const maxHealthMaterial = new MeshLineMaterial({
-      color: new THREE.Color(0xff0000),
+      color: new THREE.Color(0xe4ba46),
       lineWidth: 0.7 // Adjust this value to change the thickness of the line
     }) // Red color
 

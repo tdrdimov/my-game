@@ -66,8 +66,8 @@ export class Walls {
       (fbx) => {
         // Adjust the position, rotation, and scale of the decor model
         fbx.position.set(x, y, z)
-        fbx.rotation.x = Math.PI;
-        fbx.rotation.z = Math.PI;
+        fbx.rotation.x = Math.PI
+        fbx.rotation.z = Math.PI
         fbx.scale.set(0.07, 0.07, 0.07)
 
         // Add the decor model to the scene

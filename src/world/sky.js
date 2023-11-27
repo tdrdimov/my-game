@@ -34,9 +34,9 @@ export class Sky {
     // Add velocities for the particles
     const particleVelocities = new Float32Array(1000 * 3) // 1000 particles
     for (let i = 0; i < particleVelocities.length; i += 3) {
-      particleVelocities[i] = (Math.random() - 0.5) * 0.02 // X velocity
+      particleVelocities[i] = (Math.random() - 0.5) * 0.1 // Increased X velocity for faster movement
       particleVelocities[i + 1] = -Math.random() * 0.02 // Y velocity (negative for falling down)
-      particleVelocities[i + 2] = (Math.random() - 0.5) * 0.02 // Z velocity
+      particleVelocities[i + 2] = (Math.random() - 0.5) * 0.01 // Z velocity
     }
 
     this.particleGeometry.setAttribute('velocity', new THREE.BufferAttribute(particleVelocities, 3))
