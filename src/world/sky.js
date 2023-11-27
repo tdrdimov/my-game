@@ -60,7 +60,7 @@ export class Sky {
       positions[i + 2] += velocities[i + 2] // Update Z position
 
       // If the particle has fallen below the ground (Y position less than 0), reset it to the top
-      if (positions[i + 1] < 0) {
+      if (positions[i + 1] < 1) {
         positions[i] = (Math.random() - 0.5) * (this.areaRange + this.areaRange) // X position
         positions[i + 1] = this.areaRange // Y position
         positions[i + 2] = (Math.random() - 0.5) * (this.areaRange + 50) // Z position
