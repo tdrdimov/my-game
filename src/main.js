@@ -8,7 +8,7 @@ let _SOCKET = null
 
 window.addEventListener('DOMContentLoaded', () => {
   const scene = new THREE.Scene()
-  const fogColor = 0xffa07a
+  const fogColor = 0x6f412f
   const fogNear = 200
   const fogFar = 500
 

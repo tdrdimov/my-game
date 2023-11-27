@@ -11,16 +11,17 @@ export class Sky {
     this.particleGeometry = new THREE.BufferGeometry()
 
     const textureLoader = new THREE.TextureLoader()
-    const leafTexture = textureLoader.load('./sparkle.png')
-    // leafTexture.flipY = false
+    const sparkle = textureLoader.load('./sparkle.png')
 
     const particleMaterial = new THREE.PointsMaterial({
       color: 0xffffff,
       size: 1.2,
-      map: leafTexture,
+      map: sparkle,
       transparent: true,
       blending: THREE.AdditiveBlending,
-      depthWrite: false
+      opacity: 0.8,
+      fog: true,
+      alphaTest: 0.1
     })
     this.areaRange = 300
     // Add positions for the particles

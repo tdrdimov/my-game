@@ -8,9 +8,10 @@ export class ShootSpell {
     this.ballGenerator = new BallGenerator(
       this._params.scene,
       this._params.cannon,
-      this._params.playerId,
+      this._params.playerId
     )
     this.magic1KeyIsPressed = false
+    
     this.characterHeight = 15
     this._params.socket.on('shoot-spell', (playerId, spellInfo) => {
       if (this._params.socket.id !== playerId) {
@@ -43,7 +44,7 @@ export class ShootSpell {
       const ballPosition = new THREE.Vector3().copy(playerPosition).add(offset)
 
       // Calculate the velocity of the ball based on the player's rotation
-      const ballVelocityMagnitude = 50 // Adjust the speed as needed
+      const ballVelocityMagnitude = 40 // Adjust the speed as needed
       const ballVelocity = modelForward.clone().multiplyScalar(-ballVelocityMagnitude)
 
       // Emit a 'shoot-spell' event with the player's ID and spell information

@@ -1,6 +1,15 @@
 import * as CANNON from 'cannon-es'
 import * as THREE from 'three'
-import { BatchedParticleRenderer, QuarksLoader } from 'three.quarks' // Import only ParticleEmitter
+import {
+  SphereEmitter,
+  ConstantValue,
+  IntervalValue,
+  PointEmitter,
+  RandomColor,
+  RenderMode,
+  ParticleSystem,
+  BatchedParticleRenderer
+} from 'three.quarks'
 
 export default class BallGenerator {
   constructor(scene, cannon, playerId) {
@@ -27,7 +36,7 @@ export default class BallGenerator {
     body.linearDamping = 0.1
     body.velocity.set(velocity.x, velocity.y, velocity.z)
     body.id = this.playerId
-    
+
     this._world.addBody(body)
 
     const fireballMaterial = new THREE.MeshStandardMaterial({
@@ -43,34 +52,52 @@ export default class BallGenerator {
     this.scene.add(mesh)
 
     this.scene.add(this.batchSystem)
-    let loader = new QuarksLoader()
-    loader.setCrossOrigin('')
-    loader.load(
-      './atom.json',
-      (object3D) => {
-        object3D.position.set(x, y, z)
-        object3D.scale.set(0.3, 0.3, 0.3)
 
-        object3D.traverse((child) => {
-          if (child.type === 'ParticleEmitter') {
-            // Store the particle system with each ball
-            const ball = { mesh, body: { ...body }, particleSystem: child }
-            this.balls.push(ball)
-            // Add the system to the batch renderer
-            this.batchSystem.addSystem(child.system)
+    const particles = this.initParticleSystem()
+    particles.emitterShape = new SphereEmitter({
+      radius: 2,
+      thickness: 0.1,
+      arc: Math.PI * 2
+    })
 
-            body.addEventListener('collide', (event) => {
-              this.handleCollision(ball)
-            })
-            this.cleanUp(ball, 3)
-          }
-        })
-        this.particleSystems = object3D
-        this.scene.add(this.particleSystems)
-      },
-      () => {},
-      () => {}
-    )
+    particles.emitter.position.set(x, y, z)
+    this.batchSystem.addSystem(particles)
+    this.scene.add(particles.emitter)
+
+    const ball = { mesh, body: { ...body }, particleSystem: particles.emitter }
+    this.balls.push(ball)
+
+    body.addEventListener('collide', (event) => {
+      this.handleCollision(ball)
+    })
+    this.cleanUp(ball, 3)
+  }
+
+  initParticleSystem() {
+    return new ParticleSystem({
+      duration: 2,
+      looping: true,
+      startLife: new IntervalValue(0.3, 0.1),
+      startSpeed: new IntervalValue(1, 1),
+      startSize: new IntervalValue(0.1, 0.1),
+      startColor: new RandomColor(
+        new THREE.Vector4(1, 0.2, 0, 1), // Deep red
+        new THREE.Vector4(1, 1, 0, 1) // Bright yellow
+      ),
+      worldSpace: true,
+      maxParticle: 2000,
+      emissionOverTime: new ConstantValue(2000),
+      shape: new PointEmitter(),
+      material: new THREE.MeshBasicMaterial({
+        transparent: true,
+        blending: THREE.AdditiveBlending
+      }),
+      startTileIndex: new ConstantValue(0),
+      uTileCount: 10,
+      vTileCount: 10,
+      renderMode: RenderMode.BillBoard,
+      renderOrder: 1
+    })
   }
 
   handleCollision(ball) {
@@ -112,7 +139,7 @@ export default class BallGenerator {
         ball.particleSystem.position.sub(offset)
       }
     }
-    
+
     this.batchSystem.update(timeInSeconds)
   }
 }
