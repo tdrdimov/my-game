@@ -1,13 +1,28 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <link rel="stylesheet" href="/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title>Wizard Duels</title>
   </head>
   <body>
+    <div id="ui">
+      <h1 class="main_title">WIZ DUELS</h1>
+      <div class="d_flex">
+        <div>
+          <h1>Create Arena</h1><br />
+          <input name="create game" type="text" placeholder="game name" /><br /><br />
+          <button id="create_game">Create arena</button>
+        </div>
+        <div>
+          <h1>Join Arena</h1><br />
+          <input name="join game" type="text" placeholder="game name" /><br /><br />
+          <button id="join_game">Join arena</button>
+        </div>
+      </div>
+    </div>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>

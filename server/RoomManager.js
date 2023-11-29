@@ -17,7 +17,7 @@ class RoomManager {
 
   joinRoom(socket, roomName) {
     const room = this.rooms.get(roomName)
-    if (room && room.players.size <= room.maxPlayers) {
+    if (room && room.players.size < room.maxPlayers) {
       socket.join(roomName)
       room.players.add(socket.id)
       socket.room = roomName

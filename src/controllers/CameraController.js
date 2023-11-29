@@ -8,7 +8,7 @@ export default class CameraFollowController {
     this.entityManager = entityManager
     this.renderer = renderer
     this.distance = 60 // The distance between the character and camera
-    this.height = 140 // The height of the camera above the character
+    this.height = 120 // The height of the camera above the character
     this.Init()
   }
 

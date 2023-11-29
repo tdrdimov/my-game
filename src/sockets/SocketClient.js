@@ -20,18 +20,34 @@ export default class SocketClient {
 
   setupEventListeners() {
     this.socket.on('connect', () => {
-      this.socket.emit('join-room', 'room1')
+      document.getElementById('create_game').addEventListener('click', () => {
+        const room = document.querySelector('input[name="create game"]').value
+        if (room) {
+          this.socket.emit('create-room', room)
+        }
+      })
+      
+      document.getElementById('join_game').addEventListener('click', () => {
+        const room = document.querySelector('input[name="join game"]').value
+        if (room) {
+          this.socket.emit('join-room', room)
+        }
+      })
     })
 
     // Event listener for when the user has joined a room
     this.socket.on('joined-room', (room) => {
-      // console.log(`Joined room: ${room}`)
       window.history.pushState({}, '', '?room=' + room)
+      document.getElementById('ui').style.display = 'none'
     })
 
     // Event listener for when the room is full
     this.socket.on('room-full', () => {
-      console.log('The room is full. Unable to join.')
+      alert('The room is full. Unable to join.')
+    })
+
+    this.socket.on('room-exist', () => {
+      alert('This room already exist. Try joining it or think of another room name.')
     })
 
     // Event listener for when a player leaves the room

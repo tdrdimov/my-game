@@ -1,14 +1,16 @@
 // Lights.js
-import * as THREE from 'three';
+import * as THREE from 'three'
 
 export class Lights {
   constructor(scene) {
-    this._scene = scene;
-    this._CreateLights();
+    this._scene = scene
+    this._CreateLights()
   }
 
   _CreateLights() {
-    let light = new THREE.AmbientLight(0xe3d4fe, 2)
-    this._scene.add(light)
+    const ambient = new THREE.AmbientLight(0xe3d4fe, 2)
+    const directional = new THREE.DirectionalLight(0x333333, 1)
+    directional.position.set(0, 1, 1).normalize()
+    this._scene.add(ambient, directional)
   }
 }

@@ -56,7 +56,7 @@ export default class BallGenerator {
     const particles = this.initParticleSystem()
     particles.emitterShape = new SphereEmitter({
       radius: 2,
-      thickness: 0.1,
+      thickness: 1,
       arc: Math.PI * 2
     })
 
@@ -75,7 +75,7 @@ export default class BallGenerator {
 
   initParticleSystem() {
     return new ParticleSystem({
-      duration: 2,
+      duration: 1,
       looping: true,
       startLife: new IntervalValue(0.3, 0.1),
       startSpeed: new IntervalValue(1, 1),
@@ -88,9 +88,10 @@ export default class BallGenerator {
       maxParticle: 2000,
       emissionOverTime: new ConstantValue(2000),
       shape: new PointEmitter(),
-      material: new THREE.MeshBasicMaterial({
+      material: new THREE.PointsMaterial({
         transparent: true,
-        blending: THREE.AdditiveBlending
+        blending: THREE.AdditiveBlending,
+        depthTest: false,
       }),
       startTileIndex: new ConstantValue(0),
       uTileCount: 10,

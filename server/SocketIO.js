@@ -8,6 +8,22 @@ class SocketIO {
     this.players = new Map()
   }
 
+  addPlayerToRoom(socket, roomName) {
+    if (this.roomManager.joinRoom(socket, roomName)) {
+      
+      if (!this.players.has(socket.id)) {
+        this.players.set(socket.id, { x: 0, y: 0, z: 0 })
+        socket.emit('current-players', Array.from(this.players.entries()))
+      }
+
+      socket.emit('joined-room', roomName)
+
+      this.io.to(roomName).emit('player-joined', socket.id)
+    } else {
+      socket.emit('room-full', this.players)
+    }
+  }
+
   configureServer(server) {
     this.io = new SocketIOServer(server.httpServer, {
       cors: {
@@ -22,21 +38,17 @@ class SocketIO {
         this.players.delete(socket.id)
       })
 
-      socket.on('join-room', (roomName) => {
-        const room = this.roomManager.createRoom(roomName, socket)
-
-        if (!this.players.has(socket.id)) {
-          this.players.set(socket.id, { x: 0, y: 0, z: 0 })
-          socket.emit('current-players', Array.from(this.players.entries()))
-        }
-
-        if (this.roomManager.joinRoom(socket, roomName)) {
-          socket.emit('joined-room', roomName)
-
-          this.io.to(roomName).emit('player-joined', socket.id)
+      socket.on('create-room', (roomName) => {
+        if (!this.roomManager.rooms.has(roomName)) {
+          this.roomManager.createRoom(roomName, socket)
+          this.addPlayerToRoom(socket, roomName)
         } else {
-          socket.emit('room-full')
+          socket.emit('room-exist')
         }
+      })
+
+      socket.on('join-room', (roomName) => {
+        this.addPlayerToRoom(socket, roomName)
       })
 
       socket.on('player-moved', (playerId, newState) => {
