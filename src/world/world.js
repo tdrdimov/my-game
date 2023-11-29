@@ -8,6 +8,7 @@ import { Canvas } from './canvas'
 import { Walls } from './walls'
 import { Torch } from './torch'
 import { Sky } from './sky'
+import { Fence } from './fence'
 export class World {
   constructor(socket, scene, world) {
     this.socket = socket
@@ -27,6 +28,10 @@ export class World {
     this.floor = new Floor(this._scene, this.cannonWorld)
     this.underfloor = new Floor(this._scene, this.cannonWorld, new THREE.Vector3(0, -100, 0), 700, 700, true)
     this.walls = new Walls(this._scene, this.cannonWorld)
+    this.fence1 = new Fence(this._scene, './models/fence.fbx', Math.PI - 0.06, new THREE.Vector3(88, 2, -11))
+    this.fence2 = new Fence(this._scene, './models/fence.fbx', (Math.PI - 0.01) * 2, new THREE.Vector3(-88, 2, 11))
+    this.fence3 = new Fence(this._scene, './models/fence.fbx', -Math.PI / 2, new THREE.Vector3(11, 2, 88))
+    this.fence4 = new Fence(this._scene, './models/fence.fbx', Math.PI / 2, new THREE.Vector3(-11, 2, -88))
     this.cannonDebugger = new CannonDebugger(this._scene, this.cannonWorld._world, {})
 
     this.torch1 = new Torch(this._scene, new THREE.Vector3(-65, 0, 65), Math.PI * -1.2, {
