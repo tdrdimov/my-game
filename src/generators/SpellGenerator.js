@@ -42,10 +42,10 @@ export default class BallGenerator {
     const fireballMaterial = new THREE.MeshStandardMaterial({
       color: 0xffa500,
       transparent: true,
-      opacity: 0
+      opacity: 0.1
     })
 
-    const fireballGeometry = new THREE.SphereGeometry(0, 32, 32)
+    const fireballGeometry = new THREE.SphereGeometry(2, 32, 32)
     const mesh = new THREE.Mesh(fireballGeometry, fireballMaterial)
     mesh.castShadow = true
     mesh.position.set(x, y, z)

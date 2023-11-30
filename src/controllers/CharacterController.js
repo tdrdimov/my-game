@@ -54,14 +54,14 @@ export class CharacterController {
 
     // Add event listeners for mouse click
     window.addEventListener('click', (event) => {
-      this.handleMouseClick(event)
+      this.moveCharacterToMouse(event)
     })
 
     let isMouseButtonDown = false
 
     window.addEventListener('mousedown', (event) => {
       isMouseButtonDown = true
-      this.handleMouseClick(event)
+      this.moveCharacterToMouse(event)
     })
 
     window.addEventListener('mouseup', () => {
@@ -71,8 +71,9 @@ export class CharacterController {
     // Continuously update the target position while the mouse button is held
     window.addEventListener('mousemove', (event) => {
       if (isMouseButtonDown && this._target) {
-        this.handleMouseClick(event)
+        this.moveCharacterToMouse(event, isMouseButtonDown)
       }
+      this.rotatePlayer(event)
     })
 
     const size = 20
@@ -145,7 +146,6 @@ export class CharacterController {
 
   onColide(event) {
     const { body } = event
-    // console.log(body.id)
     if (typeof body.id === 'string' && body.id !== this._params.socket.id) {
       this._params.socket.emit('receive-damage', this._params.socket.id)
       this._params.playerHealths[this._params.socket.id] -= this.damage
@@ -170,14 +170,29 @@ export class CharacterController {
   }
 
   updateState(newState) {
-    this.entity.position.copy(newState)
+    if (newState.position) {
+      this.entity.position.copy(newState.position)
+    }
+    
+    if (newState.rotation) {
+      this.vehicle.lookAt(newState.rotation)
+    }
   }
 
   updateHealth(newState) {
     this.healthBar.updatePosition(newState)
   }
 
-  handleMouseClick(event) {
+  rotatePlayer(event) {
+    const intersects = this.mouseIntersects(event)
+    if (intersects && intersects.length) {
+      for (let i = 0; i < intersects.length; i++) {
+        this.vehicle.lookAt(intersects[i].point)
+      }
+    }
+  }
+
+  mouseIntersects(event) {
     if (
       !this._target ||
       this._params.socket.id !== this._params.playerId ||
@@ -185,9 +200,6 @@ export class CharacterController {
     ) {
       return
     }
-
-    // When the player moves
-    this._params.socket.emit('player-moved', this._params.playerId, this.entity.position)
 
     const mousePosition = new THREE.Vector2()
     mousePosition.x = (event.clientX / window.innerWidth) * 2 - 1
@@ -197,7 +209,17 @@ export class CharacterController {
     const floorMesh = this._params.scene.getObjectByName('floor')
     const intersects = this.raycaster.intersectObjects([floorMesh])
 
-    if (intersects.length) {
+    this._params.socket.emit('player-moved', this._params.playerId, {
+      position: this.entity.position,
+      rotation: intersects[0]?.point
+    })
+
+    return intersects
+  }
+
+  moveCharacterToMouse(event) {
+    const intersects = this.mouseIntersects(event)
+    if (intersects && intersects.length) {
       for (let i = 0; i < intersects.length; i++) {
         this.entity.position.copy(intersects[i].point)
       }
@@ -208,7 +230,7 @@ export class CharacterController {
       this._params.scene.add(this.indicator)
     }
 
-    if (intersects.length) {
+    if (intersects && intersects.length) {
       // Set the position of the indicator to the click point
       this.indicator.position.copy(intersects[0].point)
       this.indicator.position.y = 0
