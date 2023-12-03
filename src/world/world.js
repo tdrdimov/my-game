@@ -9,6 +9,7 @@ import { Walls } from './walls'
 import { Torch } from './torch'
 import { Sky } from './sky'
 import { Fence } from './fence'
+
 export class World {
   constructor(socket, scene, world) {
     this.socket = socket
@@ -16,6 +17,7 @@ export class World {
     this.cannonWorld = world
     this.players = new Map()
     this.playerHealths = {}
+    this.isUiVisible = true
     this._Initialize()
   }
 
@@ -26,12 +28,39 @@ export class World {
     new Lights(this._scene)
     this.sky = new Sky(this._scene)
     this.floor = new Floor(this._scene, this.cannonWorld)
-    this.underfloor = new Floor(this._scene, this.cannonWorld, new THREE.Vector3(0, -100, 0), 700, 700, true)
+    this.underfloor = new Floor(
+      this._scene,
+      this.cannonWorld,
+      new THREE.Vector3(0, -100, 0),
+      700,
+      700,
+      true
+    )
     this.walls = new Walls(this._scene, this.cannonWorld)
-    this.fence1 = new Fence(this._scene, './models/fence.fbx', Math.PI - 0.06, new THREE.Vector3(88, 2, -11))
-    this.fence2 = new Fence(this._scene, './models/fence.fbx', (Math.PI - 0.01) * 2, new THREE.Vector3(-88, 2, 11))
-    this.fence3 = new Fence(this._scene, './models/fence.fbx', -Math.PI / 2, new THREE.Vector3(11, 2, 88))
-    this.fence4 = new Fence(this._scene, './models/fence.fbx', Math.PI / 2, new THREE.Vector3(-11, 2, -88))
+    this.fence1 = new Fence(
+      this._scene,
+      './models/fence.fbx',
+      Math.PI - 0.06,
+      new THREE.Vector3(88, 2, -11)
+    )
+    this.fence2 = new Fence(
+      this._scene,
+      './models/fence.fbx',
+      (Math.PI - 0.01) * 2,
+      new THREE.Vector3(-88, 2, 11)
+    )
+    this.fence3 = new Fence(
+      this._scene,
+      './models/fence.fbx',
+      -Math.PI / 2,
+      new THREE.Vector3(11, 2, 88)
+    )
+    this.fence4 = new Fence(
+      this._scene,
+      './models/fence.fbx',
+      Math.PI / 2,
+      new THREE.Vector3(-11, 2, -88)
+    )
     this.cannonDebugger = new CannonDebugger(this._scene, this.cannonWorld._world, {})
 
     this.torch1 = new Torch(this._scene, new THREE.Vector3(-65, 0, 65), Math.PI * -1.2, {
@@ -51,16 +80,16 @@ export class World {
       z: -6
     })
 
-    this.socket.on('player-joined', (playerId, initialState) => {
+    this.socket.on('player-joined', (playerId, playerPosition) => {
       this.playerHealths[playerId] = 100
-      this._LoadAnimatedModel(playerId, initialState)
+      this._LoadAnimatedModel(playerId, playerPosition)
     })
 
     this.socket.on('current-players', (players) => {
-      players.forEach(([playerId, playerState]) => {
+      players.forEach(([playerId, playerPosition]) => {
         this.playerHealths[playerId] = 100
         if (playerId !== this.socket.id) {
-          this._LoadAnimatedModel(playerId, playerState)
+          this._LoadAnimatedModel(playerId, playerPosition)
         }
       })
     })
@@ -77,11 +106,20 @@ export class World {
       }
     })
 
+    this.socket.on('waiting-for-second-player', () => {
+      document.getElementById('waiting_room').style.display = 'block'
+      this.isUiVisible = true
+    })
+
+    this.socket.on('start-game', () => {
+      document.getElementById('waiting_room').style.display = 'none'
+      this.isUiVisible = false
+    })
+
     this._RAF()
   }
 
-  _LoadAnimatedModel(playerId, initialState) {
-    // Check if a CharacterController instance already exists for the player
+  _LoadAnimatedModel(playerId, playerPosition) {
     if (!this.players.has(playerId)) {
       const params = {
         camera: this._camera,
@@ -90,9 +128,10 @@ export class World {
         cannon: this.cannonWorld,
         playerId: playerId,
         socket: this.socket,
-        initialState: initialState,
-        playerHealths: this.playerHealths
+        playerHealths: this.playerHealths,
+        playerPosition: playerPosition
       }
+
       const player = new CharacterController(params)
       this.players.set(playerId, player)
     }
@@ -106,8 +145,10 @@ export class World {
       const timeElapsed = t - this._previousRAF
       const timeElapsedS = timeElapsed * 0.001
 
-      for (const [playerId, controller] of this.players) {
-        controller.Update(t, timeElapsedS)
+      if (!this.isUiVisible) {
+        for (const [playerId, controller] of this.players) {
+          controller.Update(t, timeElapsedS)
+        }
       }
 
       this._previousRAF = t

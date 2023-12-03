@@ -1,5 +1,6 @@
 import * as CANNON from 'cannon-es'
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 export class Floor {
   constructor(
@@ -13,6 +14,7 @@ export class Floor {
     this._scene = scene
     this._world = cannon._world
     this._CreateFloor(position, planeWidth, planeHeight, underfloor)
+    this._AddDecor()
   }
 
   _CreateFloor(position, planeWidth, planeHeight, underfloor) {
@@ -78,11 +80,37 @@ export class Floor {
 
     this._scene.add(plane)
 
-    const floorShape = new CANNON.Plane()
+    const floorShape = new CANNON.Box(new CANNON.Vec3(planeWidth, planeHeight, 0.5))
     const floorBody = new CANNON.Body()
     floorBody.mass = 0
     floorBody.addShape(floorShape)
     floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5)
+    floorBody.position.copy(plane.position)
     this._world.addBody(floorBody)
+  }
+
+  _AddDecor() {
+    const loader = new GLTFLoader()
+    loader.load(
+      '/models/banner.glb', // Replace with the path to your decor FBX file
+      (glb) => {
+        const model = glb.scene
+        // Adjust the position, rotation, and scale of the decor model
+        model.position.set(0, 0, 0)
+        model.rotation.y = Math.PI
+        // model.rotation.z = Math.PI / 2
+        model.scale.set(5, 5, 5)
+
+        // Add the decor model to the scene
+        this._scene.add(model)
+      },
+      (xhr) => {
+        // Loading progress callback
+        // console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+      },
+      (error) => {
+        console.error('Error loading decor FBX model:', error)
+      }
+    )
   }
 }

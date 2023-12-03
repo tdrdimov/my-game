@@ -23,7 +23,7 @@ export class CharacterController {
     this.vehicle = new YUKA.Vehicle()
     this.time = new YUKA.Time()
     this.entity = new YUKA.GameEntity()
-    this.entity.position.set(0, 0, 0)
+    this.entity.position.set(this._params.playerPosition.position.x, 0, 0)
     this.healthBar = new HealthBar(this._params.scene, 100, this.entity.position)
     this._input = new CharacterControllerInput(this._params.socket, this._params.playerId)
     this.entityManager = new YUKA.EntityManager()
@@ -41,6 +41,7 @@ export class CharacterController {
     )
     this.fbxModel = await this.loadCharacter()
     this._target = this.fbxModel.target
+    this._target.position.set(this._params.playerPosition.position.x, 0, 0)
     this._mixer = this.fbxModel.mixer
     this._stateMachine = this.fbxModel.stateMachine
     this.cameraController = this.fbxModel.cameraController
@@ -82,15 +83,15 @@ export class CharacterController {
 
     this.body = new CANNON.Body({
       mass: 1,
-      position: new CANNON.Vec3(0, 0, 0),
+      position: new CANNON.Vec3(this._params.playerPosition.position.x, 0, 0),
       shape: shape,
       type: CANNON.Body.KINEMATIC,
-      material: this._target.children[0].material
+      material: this._target.children[0].material,
     })
 
     // YUKA vehicle configuration
     this.vehicle.setRenderComponent(this._target, this.sync)
-    // this.vehicle.position.set(0, 0, 0)
+    this.vehicle.position.set(this._params.playerPosition.position.x, 0, 0)
     this.vehicle.maxSpeed = 50
     this.vehicle.mass = 0.1
     this.vehicle.scale.set(0.05, 0.05, 0.05)
@@ -103,6 +104,7 @@ export class CharacterController {
     this.entityManager.add(this.vehicle)
 
     this.body.position.copy(this._target.position)
+    this.body.id = `player_${this._params.socket.id}`
     this.body.addEventListener('collide', this.onColide)
     this._world.addBody(this.body)
 
@@ -134,6 +136,7 @@ export class CharacterController {
       if (this.playerId === playerId) {
         this._params.playerHealths[playerId] -= this.damage
         this.healthBar.updateHealth(this._params.playerHealths[playerId])
+        this._stateMachine.SetState('receiveDmg')
         if (this._params.playerHealths[playerId] <= 0) {
           this._stateMachine.SetState('death')
           setTimeout(() => {
@@ -150,6 +153,7 @@ export class CharacterController {
       this._params.socket.emit('receive-damage', this._params.socket.id)
       this._params.playerHealths[this._params.socket.id] -= this.damage
       this.healthBar.updateHealth(this._params.playerHealths[this._params.socket.id])
+      this._stateMachine.SetState('receiveDmg')
     }
 
     if (this._params.playerHealths[this._params.socket.id] <= 0) {
@@ -225,7 +229,7 @@ export class CharacterController {
       }
     }
 
-    if (!this.indicator) {
+    if (!this.indicator && this._params.socket.id === this._params.playerId) {
       this.indicator = new THREE.Mesh(this.indicatorGeometry, this.indicatorMaterial)
       this._params.scene.add(this.indicator)
     }
@@ -276,7 +280,7 @@ export class CharacterController {
       this.cameraController.Update(timeInSeconds)
     }
 
-    this.shootSpell.cast(timeInSeconds)
+    this.shootSpell.cast(timeInSeconds, this.body.position)
 
     // update animations
     if (this._mixer) {

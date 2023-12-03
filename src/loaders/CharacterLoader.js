@@ -59,7 +59,8 @@ export class CharacterLoader {
           'Jump.fbx': 'jump',
           'Standing_2H_Magic_Attack_01.fbx': 'magic1',
           'Idle.fbx': 'idleWait',
-          'death.fbx': 'death'
+          'death.fbx': 'death',
+          'ReceiveDmg.fbx': 'receiveDmg',
         }
 
         const loadPromises = []

@@ -8,10 +8,11 @@ export class ShootSpell {
     this.ballGenerator = new BallGenerator(
       this._params.scene,
       this._params.cannon,
-      this._params.playerId
+      this._params.playerId,
+      this._params.socket
     )
     this.magic1KeyIsPressed = false
-    
+
     this.characterHeight = 15
     this._params.socket.on('shoot-spell', (playerId, spellInfo) => {
       if (this._params.socket.id !== playerId) {
@@ -28,13 +29,13 @@ export class ShootSpell {
   }
 
   cast(timeInSeconds) {
+    // Copy the player's position and quaternion
+    const modelRotation = this._params.body.quaternion.clone().normalize()
+    const modelForward = new THREE.Vector3(0, 0, -1).applyQuaternion(modelRotation)
+    const playerPosition = this._params.body.position.clone()
+    const playerQuaternion = modelRotation
+    
     if (this._params.input._keys.magic1 && !this.magic1KeyIsPressed) {
-      // Copy the player's position and quaternion
-      const modelRotation = this._params.body.quaternion.clone().normalize()
-      const modelForward = new THREE.Vector3(0, 0, -1).applyQuaternion(modelRotation)
-      const playerPosition = this._params.body.position.clone()
-      const playerQuaternion = modelRotation
-
       // Set the offset for the ball in front of the player
       const offsetDistance = 15 // Adjust this value based on your preference
       const offset = new THREE.Vector3(0, 0, offsetDistance)
@@ -66,13 +67,13 @@ export class ShootSpell {
           )
         }, this.createBallDelay)
       }
-      
+
       // Set the flag to indicate that the magic1 key is pressed
       this.magic1KeyIsPressed = true
     } else if (!this._params.input._keys.magic1) {
       // Reset the flag when the magic1 key is released
       this.magic1KeyIsPressed = false
     }
-    this.ballGenerator.update(timeInSeconds)
+    this.ballGenerator.update(timeInSeconds, playerPosition)
   }
 }

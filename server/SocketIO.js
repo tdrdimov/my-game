@@ -10,15 +10,27 @@ class SocketIO {
 
   addPlayerToRoom(socket, roomName) {
     if (this.roomManager.joinRoom(socket, roomName)) {
-      
+      let playerPosition
+      if (this.players.size === 0) {
+        playerPosition = -50 // Position for the first player
+        socket.emit('waiting-for-second-player') // Emit the waiting event to the first player
+      } else if (this.players.size === 1) {
+        playerPosition = 50 // Position for the second player
+        setTimeout(() => {
+          this.io.to(roomName).emit('start-game') // Emit the start event to both players after a delay
+        }, 3000)
+      }
+      const playerPositionData = {
+        position: { x: playerPosition, y: 0, z: 0 }
+      }
       if (!this.players.has(socket.id)) {
-        this.players.set(socket.id, { x: 0, y: 0, z: 0 })
+        this.players.set(socket.id, playerPositionData)
         socket.emit('current-players', Array.from(this.players.entries()))
       }
 
       socket.emit('joined-room', roomName)
 
-      this.io.to(roomName).emit('player-joined', socket.id)
+      this.io.to(roomName).emit('player-joined', socket.id, playerPositionData)
     } else {
       socket.emit('room-full', this.players)
     }
@@ -27,9 +39,9 @@ class SocketIO {
   configureServer(server) {
     this.io = new SocketIOServer(server.httpServer, {
       cors: {
-        origin: '*',
+        origin: '*'
       },
-      path: '/socket.io',
+      path: '/socket.io'
     })
 
     this.io.on('connection', (socket) => {

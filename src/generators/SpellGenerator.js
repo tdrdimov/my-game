@@ -12,14 +12,16 @@ import {
 } from 'three.quarks'
 
 export default class BallGenerator {
-  constructor(scene, cannon, playerId) {
+  constructor(scene, cannon, playerId, socket) {
     this.scene = scene
     this.playerId = playerId
+    this.socket = socket
     this._world = cannon._world
     this.balls = []
     this.magicEmitters = []
     this.particleSystems = null
     this.batchSystem = new BatchedParticleRenderer()
+    this.dmgParticles = null
   }
 
   createBall(x, y, z, velocity) {
@@ -68,7 +70,9 @@ export default class BallGenerator {
     this.balls.push(ball)
 
     body.addEventListener('collide', (event) => {
-      this.handleCollision(ball)
+      if (event.body.id !== this.socket.id) {
+        this.handleCollision(ball, event)
+      }
     })
     this.cleanUp(ball, 3)
   }
@@ -91,7 +95,7 @@ export default class BallGenerator {
       material: new THREE.PointsMaterial({
         transparent: true,
         blending: THREE.AdditiveBlending,
-        depthTest: false,
+        depthTest: false
       }),
       startTileIndex: new ConstantValue(0),
       uTileCount: 10,
@@ -101,8 +105,30 @@ export default class BallGenerator {
     })
   }
 
-  handleCollision(ball) {
-    this.cleanUp(ball, 2)
+  handleCollision(ball, event) {
+    const ev = { ...event }
+    if (ev.body.id.includes('player')) {
+      this.dmgParticles = this.initParticleSystem()
+      // Set the position of the particle system to the position of the ball
+      this.dmgParticles.emitter.position.copy(ball.body.position)
+
+      this.dmgParticles.emitterShape = new SphereEmitter({
+        radius: 5,
+        thickness: 1,
+        arc: Math.PI * 2
+      })
+
+      this.batchSystem.addSystem(this.dmgParticles)
+
+      // Add the particle system to the scene
+      this.scene.add(this.dmgParticles.emitter)
+
+      setTimeout(() => {
+        this.scene.remove(this.dmgParticles.emitter)
+      }, 200)
+    }
+
+    this.cleanUp(ball, 0)
   }
 
   cleanUp(ball, seconds) {
@@ -122,7 +148,7 @@ export default class BallGenerator {
     }, seconds * 1000)
   }
 
-  update(timeInSeconds) {
+  update(timeInSeconds, playerPosition) {
     // Your existing code for updating cannon.js bodies and three.js meshes
     for (const ball of this.balls) {
       ball.mesh.position.copy(ball.body.position)
@@ -140,7 +166,6 @@ export default class BallGenerator {
         ball.particleSystem.position.sub(offset)
       }
     }
-
     this.batchSystem.update(timeInSeconds)
   }
 }
