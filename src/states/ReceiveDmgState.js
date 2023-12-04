@@ -61,5 +61,13 @@ export class ReceiveDmgState extends State {
     this._Cleanup()
   }
 
-  Update() {}
+  Update(timeElapsed, input) {
+    if (input._keys.forward) {
+      this._parent.SetState('walk')
+    } else if (input._keys.space) {
+      this._parent.SetState('jump')
+    } else if (input._keys.magic1) {
+      this._parent.SetState('magic1')
+    }
+  }
 }

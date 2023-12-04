@@ -26,18 +26,7 @@ export default class CharacterControllerInput {
   _onKeyDown(event) {
     switch (event.keyCode) {
       case 81: // q
-        if (this._socket.id === this._playerId && !this.isJumping) {
-          if (event.timeStamp - this.lastQKeyPressTimestamp > this.timeInterval && !event.repeat) {
-            this._keys.magic1 = true
-            this.isShooting = true
-            setTimeout(() => {
-              this.isShooting = false
-            }, 1000)
-            this.lastQKeyPressTimestamp = event.timeStamp
-          } else {
-            this._keys.magic1 = false
-          }
-        }
+        this._keys.magic1 = false
         break
       case 87: // w
         this._keys.left = true
@@ -70,7 +59,19 @@ export default class CharacterControllerInput {
   _onKeyUp(event) {
     switch (event.keyCode) {
       case 81: // q
-        this._keys.magic1 = false
+        if (this._socket.id === this._playerId && !this.isJumping) {
+          if (event.timeStamp - this.lastQKeyPressTimestamp > this.timeInterval && !event.repeat) {
+            this._keys.magic1 = true
+            this.isShooting = true
+            setTimeout(() => {
+              this.isShooting = false
+              this._keys.magic1 = false
+            }, 500)
+            this.lastQKeyPressTimestamp = event.timeStamp
+          } else {
+            this._keys.magic1 = false
+          }
+        }
         break
       case 87: // w
         this._keys.left = false

@@ -80,9 +80,10 @@ export class Magic1State extends State {
       this._parent.SetState('walk')
     }
     if (timeElapsed) {
-      // stop character from moving while casting
-      const currentPosition = this.parent.vehicle.position.clone()
-      this.parent.entity.position.copy(currentPosition)
+      // slow down vehicle speed to almost stop while shooting
+      const vehicle = this.parent.vehicle
+      const slowdownFactor = 0.1 // Adjust as needed
+      vehicle.velocity.multiplyScalar(slowdownFactor)
     }
   }
 }

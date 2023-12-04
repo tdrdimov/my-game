@@ -125,7 +125,7 @@ export default class BallGenerator {
 
       setTimeout(() => {
         this.scene.remove(this.dmgParticles.emitter)
-      }, 200)
+      }, 100)
     }
 
     this.cleanUp(ball, 0)
@@ -148,7 +148,7 @@ export default class BallGenerator {
     }, seconds * 1000)
   }
 
-  update(timeInSeconds, playerPosition) {
+  update(timeInSeconds) {
     // Your existing code for updating cannon.js bodies and three.js meshes
     for (const ball of this.balls) {
       ball.mesh.position.copy(ball.body.position)
