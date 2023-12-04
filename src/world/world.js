@@ -89,6 +89,7 @@ export class World {
       players.forEach(([playerId, playerPosition]) => {
         this.playerHealths[playerId] = 100
         if (playerId !== this.socket.id) {
+          document.getElementById('waiting_room').style.display = 'block'
           this._LoadAnimatedModel(playerId, playerPosition)
         }
       })

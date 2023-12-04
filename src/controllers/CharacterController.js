@@ -19,12 +19,12 @@ export class CharacterController {
     this._world = this._params.cannon._world
     this.raycaster = new THREE.Raycaster()
     this._animations = {}
-    this.damage = 15
+    this.damage = 10
     this.vehicle = new YUKA.Vehicle()
     this.time = new YUKA.Time()
     this.entity = new YUKA.GameEntity()
     this.entity.position.set(this._params.playerPosition.position.x, 0, 0)
-    this.healthBar = new HealthBar(this._params.scene, 100, this.entity.position)
+    this.healthBar = new HealthBar(this._params.scene, 100, this.entity.position, this._params.camera)
     this._input = new CharacterControllerInput(this._params.socket, this._params.playerId)
     this.entityManager = new YUKA.EntityManager()
     this._stateMachine = new CharacterFSM(

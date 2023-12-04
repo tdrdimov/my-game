@@ -82,7 +82,7 @@ export class Magic1State extends State {
     if (timeElapsed) {
       // slow down vehicle speed to almost stop while shooting
       const vehicle = this.parent.vehicle
-      const slowdownFactor = 0.1 // Adjust as needed
+      const slowdownFactor = 0 // Adjust as needed
       vehicle.velocity.multiplyScalar(slowdownFactor)
     }
   }

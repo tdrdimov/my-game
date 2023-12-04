@@ -113,8 +113,8 @@ export default class BallGenerator {
       this.dmgParticles.emitter.position.copy(ball.body.position)
 
       this.dmgParticles.emitterShape = new SphereEmitter({
-        radius: 5,
-        thickness: 1,
+        radius: 3,
+        thickness: 3,
         arc: Math.PI * 2
       })
 
