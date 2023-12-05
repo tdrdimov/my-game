@@ -7,8 +7,8 @@ class HealthBar {
     this.camera = camera
     this.entity = entity
     const lineGeometry = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-1, 0, 0),
-      new THREE.Vector3(0, 0, 0)
+      new THREE.Vector3(0, 0, 0),
+      new THREE.Vector3(1, 0, 0)
     ])
 
     const line = new MeshLine()
@@ -74,8 +74,16 @@ class HealthBar {
   }
 
   updateHealth(newHealth) {
-    this.health = newHealth
-    this.updateScale()
+    this.health = newHealth;
+    const newLength = this.health / 10;
+  
+    // Update the texture coordinates
+    const uv = this.line.geometry.attributes.uv.array;
+    uv[2] = newLength; // Adjust the x-coordinate of the second point
+  
+    // Update the buffer geometry
+    this.line.geometry.attributes.uv.needsUpdate = true;
+    this.updateScale();
   }
 
   updateScale() {
@@ -83,10 +91,6 @@ class HealthBar {
   }
 
   updatePosition(entityPosition) {
-    // Calculate the centerOffset for the line
-    let lineWidth = this.line.scale.x;
-    let lineCenterOffset = lineWidth / 2;
-  
     // Calculate the centerOffset for the maxHealthLine
     let maxHealthLineWidth = this.maxHealthLine.scale.x;
     let maxHealthLineCenterOffset = maxHealthLineWidth / 2;
@@ -97,8 +101,8 @@ class HealthBar {
     let textLabelCenterOffset = textWidth / 2;
   
     // Set the position to the entity's position plus an offset
-    this.line.position.copy(entityPosition).add(new THREE.Vector3(-lineCenterOffset, 22, 0));
-    this.maxHealthLine.position.copy(entityPosition).add(new THREE.Vector3(-maxHealthLineCenterOffset, 22, 0));
+    this.line.position.copy(entityPosition).add(new THREE.Vector3(maxHealthLineCenterOffset, 22, 0));
+    this.maxHealthLine.position.copy(entityPosition).add(new THREE.Vector3(maxHealthLineCenterOffset, 22, 0));
     this.textLabel.position.copy(entityPosition).add(new THREE.Vector3(textLabelCenterOffset, 26, 0));
   
     // Set the rotation to the inverse of the camera's rotation
