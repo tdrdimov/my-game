@@ -9,16 +9,37 @@
   </head>
   <body>
     <div id="ui">
-      <h1 class="main_title">WIZ DUELS</h1>
+      <div class="main_title">
+        <h1>WIZ DUELS</h1>
+        <div>
+          <label for="player_name">Your in game name</label><br />
+          <input id="player_name" name="player name" type="text" placeholder="" />
+        </div>
+      </div>
+
       <div class="d_flex">
         <div>
-          <h1>Create Arena</h1><br />
-          <input name="create game" type="text" placeholder="game name" /><br /><br />
+          <h1>Create Arena</h1>
+          <br />
+          <label for="create_game_name">Game Name:</label><br />
+          <input
+            id="create_game_name"
+            name="create game"
+            type="text"
+            placeholder="game name"
+          /><br /><br />
           <button id="create_game">Create arena</button>
         </div>
         <div>
-          <h1>Join Arena</h1><br />
-          <input name="join game" type="text" placeholder="game name" /><br /><br />
+          <h1>Join Arena</h1>
+          <br />
+          <label for="join_game_name">Game Name:</label><br />
+          <input
+            id="join_game_name"
+            name="join game"
+            type="text"
+            placeholder="game name"
+          /><br /><br />
           <button id="join_game">Join arena</button>
         </div>
       </div>

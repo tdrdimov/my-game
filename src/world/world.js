@@ -80,17 +80,17 @@ export class World {
       z: -6
     })
 
-    this.socket.on('player-joined', (playerId, playerPosition) => {
+    this.socket.on('player-joined', (playerId, playerData) => {
       this.playerHealths[playerId] = 100
-      this._LoadAnimatedModel(playerId, playerPosition)
+      this._LoadAnimatedModel(playerId, playerData)
     })
 
     this.socket.on('current-players', (players) => {
-      players.forEach(([playerId, playerPosition]) => {
+      players.forEach(([playerId, playerdata]) => {
         this.playerHealths[playerId] = 100
         if (playerId !== this.socket.id) {
           document.getElementById('waiting_room').style.display = 'block'
-          this._LoadAnimatedModel(playerId, playerPosition)
+          this._LoadAnimatedModel(playerId, playerdata)
         }
       })
     })
@@ -120,7 +120,7 @@ export class World {
     this._RAF()
   }
 
-  _LoadAnimatedModel(playerId, playerPosition) {
+  _LoadAnimatedModel(playerId, playerData) {
     if (!this.players.has(playerId)) {
       const params = {
         camera: this._camera,
@@ -130,7 +130,8 @@ export class World {
         playerId: playerId,
         socket: this.socket,
         playerHealths: this.playerHealths,
-        playerPosition: playerPosition
+        playerPosition: playerData,
+        playerName: playerData.playerName
       }
 
       const player = new CharacterController(params)

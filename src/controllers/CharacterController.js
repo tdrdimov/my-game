@@ -24,7 +24,13 @@ export class CharacterController {
     this.time = new YUKA.Time()
     this.entity = new YUKA.GameEntity()
     this.entity.position.set(this._params.playerPosition.position.x, 0, 0)
-    this.healthBar = new HealthBar(this._params.scene, 100, this.entity.position, this._params.camera)
+    this.healthBar = new HealthBar(
+      this._params.scene,
+      100,
+      this.entity,
+      this._params.camera,
+      this._params.playerName
+    )
     this._input = new CharacterControllerInput(this._params.socket, this._params.playerId)
     this.entityManager = new YUKA.EntityManager()
     this._stateMachine = new CharacterFSM(
@@ -86,7 +92,7 @@ export class CharacterController {
       position: new CANNON.Vec3(this._params.playerPosition.position.x, 0, 0),
       shape: shape,
       type: CANNON.Body.KINEMATIC,
-      material: this._target.children[0].material,
+      material: this._target.children[0].material
     })
 
     // YUKA vehicle configuration
@@ -177,7 +183,7 @@ export class CharacterController {
     if (newState.position) {
       this.entity.position.copy(newState.position)
     }
-    
+
     if (newState.rotation) {
       this.vehicle.lookAt(newState.rotation)
     }

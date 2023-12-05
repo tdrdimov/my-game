@@ -8,7 +8,7 @@ class SocketIO {
     this.players = new Map()
   }
 
-  addPlayerToRoom(socket, roomName) {
+  addPlayerToRoom(socket, roomName, playerName) {
     if (this.roomManager.joinRoom(socket, roomName)) {
       let playerPosition
       if (this.players.size === 0) {
@@ -20,17 +20,18 @@ class SocketIO {
           this.io.to(roomName).emit('start-game') // Emit the start event to both players after a delay
         }, 3000)
       }
-      const playerPositionData = {
-        position: { x: playerPosition, y: 0, z: 0 }
+      const playerData = {
+        position: { x: playerPosition, y: 0, z: 0 },
+        playerName: playerName
       }
       if (!this.players.has(socket.id)) {
-        this.players.set(socket.id, playerPositionData)
+        this.players.set(socket.id, playerData)
         socket.emit('current-players', Array.from(this.players.entries()))
       }
 
       socket.emit('joined-room', roomName)
 
-      this.io.to(roomName).emit('player-joined', socket.id, playerPositionData)
+      this.io.to(roomName).emit('player-joined', socket.id, playerData)
     } else {
       socket.emit('room-full', this.players)
     }
@@ -50,17 +51,17 @@ class SocketIO {
         this.players.delete(socket.id)
       })
 
-      socket.on('create-room', (roomName) => {
+      socket.on('create-room', (roomName, playerName) => {
         if (!this.roomManager.rooms.has(roomName)) {
           this.roomManager.createRoom(roomName, socket)
-          this.addPlayerToRoom(socket, roomName)
+          this.addPlayerToRoom(socket, roomName, playerName)
         } else {
           socket.emit('room-exist')
         }
       })
 
-      socket.on('join-room', (roomName) => {
-        this.addPlayerToRoom(socket, roomName)
+      socket.on('join-room', (roomName, playerName) => {
+        this.addPlayerToRoom(socket, roomName, playerName)
       })
 
       socket.on('player-moved', (playerId, newState) => {
