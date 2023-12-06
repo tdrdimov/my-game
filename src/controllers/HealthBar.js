@@ -43,7 +43,6 @@ class HealthBar {
 
     const loader = new FontLoader()
     this.textGeometry = null
-    console.log(playerName)
     loader.load('/fonts/zilla_slab_regular.json', (font) => {
       this.textGeometry = new TextGeometry(playerName, {
         font: font,

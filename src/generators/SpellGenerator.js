@@ -1,15 +1,7 @@
 import * as CANNON from 'cannon-es'
 import * as THREE from 'three'
-import {
-  SphereEmitter,
-  ConstantValue,
-  IntervalValue,
-  PointEmitter,
-  RandomColor,
-  RenderMode,
-  ParticleSystem,
-  BatchedParticleRenderer
-} from 'three.quarks'
+import Nebula, { SpriteRenderer } from 'three-nebula'
+import json from './SpellParticles.json'
 
 export default class BallGenerator {
   constructor(scene, cannon, playerId, socket) {
@@ -18,10 +10,6 @@ export default class BallGenerator {
     this.socket = socket
     this._world = cannon._world
     this.balls = []
-    this.magicEmitters = []
-    this.particleSystems = null
-    this.batchSystem = new BatchedParticleRenderer()
-    this.dmgParticles = null
   }
 
   createBall(x, y, z, velocity) {
@@ -44,88 +32,36 @@ export default class BallGenerator {
     const fireballMaterial = new THREE.MeshStandardMaterial({
       color: 0xffa500,
       transparent: true,
-      opacity: 0.1
+      opacity: 0
     })
 
-    const fireballGeometry = new THREE.SphereGeometry(2, 32, 32)
+    const fireballGeometry = new THREE.SphereGeometry(0, 32, 32)
     const mesh = new THREE.Mesh(fireballGeometry, fireballMaterial)
     mesh.castShadow = true
     mesh.position.set(x, y, z)
     this.scene.add(mesh)
 
-    this.scene.add(this.batchSystem)
+    let nebula = null
+    Nebula.fromJSONAsync(json, THREE).then((loaded) => {
+      const nebulaRenderer = new SpriteRenderer(this.scene, THREE)
+      nebula = loaded.addRenderer(nebulaRenderer)
 
-    const particles = this.initParticleSystem()
-    particles.emitterShape = new SphereEmitter({
-      radius: 2,
-      thickness: 1,
-      arc: Math.PI * 2
-    })
+      const ball = { mesh, body: { ...body }, nebula, nebulaRenderer }
+      this.balls.push(ball)
 
-    particles.emitter.position.set(x, y, z)
-    this.batchSystem.addSystem(particles)
-    this.scene.add(particles.emitter)
-
-    const ball = { mesh, body: { ...body }, particleSystem: particles.emitter }
-    this.balls.push(ball)
-
-    body.addEventListener('collide', (event) => {
-      if (event.body.id !== this.socket.id) {
-        this.handleCollision(ball, event)
-      }
-    })
-    this.cleanUp(ball, 3)
-  }
-
-  initParticleSystem() {
-    return new ParticleSystem({
-      duration: 1,
-      looping: true,
-      startLife: new IntervalValue(0.3, 0.1),
-      startSpeed: new IntervalValue(1, 1),
-      startSize: new IntervalValue(0.1, 0.1),
-      startColor: new RandomColor(
-        new THREE.Vector4(1, 0.2, 0, 1), // Deep red
-        new THREE.Vector4(1, 1, 0, 1) // Bright yellow
-      ),
-      worldSpace: true,
-      maxParticle: 2000,
-      emissionOverTime: new ConstantValue(2000),
-      shape: new PointEmitter(),
-      material: new THREE.PointsMaterial({
-        transparent: true,
-        blending: THREE.AdditiveBlending,
-        depthTest: false
-      }),
-      startTileIndex: new ConstantValue(0),
-      uTileCount: 10,
-      vTileCount: 10,
-      renderMode: RenderMode.BillBoard,
-      renderOrder: 1
+      body.addEventListener('collide', (event) => {
+        if (event.body.id !== this.socket.id) {
+          this.handleCollision(ball, event)
+        }
+      })
+      this.cleanUp(ball, 3)
     })
   }
 
   handleCollision(ball, event) {
     const ev = { ...event }
     if (ev.body.id.includes('player')) {
-      this.dmgParticles = this.initParticleSystem()
-      // Set the position of the particle system to the position of the ball
-      this.dmgParticles.emitter.position.copy(ball.body.position)
-
-      this.dmgParticles.emitterShape = new SphereEmitter({
-        radius: 3,
-        thickness: 3,
-        arc: Math.PI * 2
-      })
-
-      this.batchSystem.addSystem(this.dmgParticles)
-
-      // Add the particle system to the scene
-      this.scene.add(this.dmgParticles.emitter)
-
-      setTimeout(() => {
-        this.scene.remove(this.dmgParticles.emitter)
-      }, 100)
+      // add particles effect as hit
     }
 
     this.cleanUp(ball, 0)
@@ -134,14 +70,16 @@ export default class BallGenerator {
   cleanUp(ball, seconds) {
     setTimeout(() => {
       this.scene.remove(ball.mesh)
+      this._world.removeBody(ball.body)
 
-      if (ball.particleSystem) {
-        this.batchSystem.deleteSystem(ball.particleSystem.system)
+      // remove nebula sprite particles
+      if (ball.nebula && ball.nebula.emitters.length) {
+        const emitter = ball.nebula.emitters[0]
+        emitter.removeAllParticles()
+        emitter.update()
       }
 
-      this._world.removeBody(ball.body)
       const index = this.balls.indexOf(ball)
-
       if (index !== -1) {
         this.balls.splice(index, 1)
       }
@@ -153,19 +91,10 @@ export default class BallGenerator {
     for (const ball of this.balls) {
       ball.mesh.position.copy(ball.body.position)
       ball.mesh.quaternion.copy(ball.body.quaternion)
-
-      if (ball.particleSystem) {
-        const ballPosition = ball.body.position.clone()
-
-        // Calculate the offset between the ball and the particle system
-        const offset = new THREE.Vector3()
-        ball.particleSystem.getWorldPosition(offset)
-        offset.sub(ballPosition)
-
-        // Apply the offset to align the particle system with the ball
-        ball.particleSystem.position.sub(offset)
+      if (ball.nebula && ball.nebula.emitters[0]) {
+        ball.nebula.emitters[0].position.copy(ball.mesh.position)
+        ball.nebula.update(timeInSeconds)
       }
     }
-    this.batchSystem.update(timeInSeconds)
   }
 }

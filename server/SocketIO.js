@@ -24,7 +24,7 @@ class SocketIO {
         position: { x: playerPosition, y: 0, z: 0 },
         playerName: playerName
       }
-      if (!this.players.has(socket.id)) {
+      if (!this.players.has(socket.id) && playerName) {
         this.players.set(socket.id, playerData)
         socket.emit('current-players', Array.from(this.players.entries()))
       }
