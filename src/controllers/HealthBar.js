@@ -43,7 +43,8 @@ class HealthBar {
 
     const loader = new FontLoader()
     this.textGeometry = null
-    loader.load('/fonts/name_font.typeface.json', (font) => {
+    console.log(playerName)
+    loader.load('/fonts/zilla_slab_regular.json', (font) => {
       this.textGeometry = new TextGeometry(playerName, {
         font: font,
         size: 1.5,
@@ -74,16 +75,16 @@ class HealthBar {
   }
 
   updateHealth(newHealth) {
-    this.health = newHealth;
-    const newLength = this.health / 10;
-  
+    this.health = newHealth
+    const newLength = this.health / 10
+
     // Update the texture coordinates
-    const uv = this.line.geometry.attributes.uv.array;
-    uv[2] = newLength; // Adjust the x-coordinate of the second point
-  
+    const uv = this.line.geometry.attributes.uv.array
+    uv[2] = newLength // Adjust the x-coordinate of the second point
+
     // Update the buffer geometry
-    this.line.geometry.attributes.uv.needsUpdate = true;
-    this.updateScale();
+    this.line.geometry.attributes.uv.needsUpdate = true
+    this.updateScale()
   }
 
   updateScale() {
@@ -92,23 +93,28 @@ class HealthBar {
 
   updatePosition(entityPosition) {
     // Calculate the centerOffset for the maxHealthLine
-    let maxHealthLineWidth = this.maxHealthLine.scale.x;
-    let maxHealthLineCenterOffset = maxHealthLineWidth / 2;
-  
+    let maxHealthLineWidth = this.maxHealthLine.scale.x
+    let maxHealthLineCenterOffset = maxHealthLineWidth / 2
+
     // Calculate the centerOffset for the textLabel
-    this.textLabel.geometry.computeBoundingBox();
-    let textWidth = this.textLabel.geometry.boundingBox.max.x - this.textLabel.geometry.boundingBox.min.x;
-    let textLabelCenterOffset = textWidth / 2;
-  
+    this.textLabel?.geometry.computeBoundingBox()
+    let textWidth =
+      this.textLabel.geometry.boundingBox.max.x - this.textLabel.geometry.boundingBox.min.x
+    let textLabelCenterOffset = textWidth / 2
+
     // Set the position to the entity's position plus an offset
-    this.line.position.copy(entityPosition).add(new THREE.Vector3(maxHealthLineCenterOffset, 22, 0));
-    this.maxHealthLine.position.copy(entityPosition).add(new THREE.Vector3(maxHealthLineCenterOffset, 22, 0));
-    this.textLabel.position.copy(entityPosition).add(new THREE.Vector3(textLabelCenterOffset, 26, 0));
-  
+    this.line.position.copy(entityPosition).add(new THREE.Vector3(maxHealthLineCenterOffset, 22, 0))
+    this.maxHealthLine.position
+      .copy(entityPosition)
+      .add(new THREE.Vector3(maxHealthLineCenterOffset, 22, 0))
+    this.textLabel.position
+      .copy(entityPosition)
+      .add(new THREE.Vector3(textLabelCenterOffset, 26, 0))
+
     // Set the rotation to the inverse of the camera's rotation
-    this.line.quaternion.copy(this.camera.quaternion).invert();
-    this.maxHealthLine.quaternion.copy(this.camera.quaternion).invert();
-    this.textLabel.quaternion.copy(this.camera.quaternion).invert();
+    this.line.quaternion.copy(this.camera.quaternion).invert()
+    this.maxHealthLine.quaternion.copy(this.camera.quaternion).invert()
+    this.textLabel.quaternion.copy(this.camera.quaternion).invert()
   }
 }
 

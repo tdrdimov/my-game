@@ -80,8 +80,9 @@ export class Magic1State extends State {
       this._parent.SetState('walk')
     }
     if (timeElapsed) {
-      // slow down vehicle speed to almost stop while shooting
       const vehicle = this.parent.vehicle
+      this.parent.entity.position.copy(vehicle.position)
+      // slow down vehicle speed to almost stop while shooting
       const slowdownFactor = 0 // Adjust as needed
       vehicle.velocity.multiplyScalar(slowdownFactor)
     }
