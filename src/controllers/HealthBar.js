@@ -44,12 +44,12 @@ class HealthBar {
     const loader = new FontLoader()
     this.textGeometry = null
     loader.load('/fonts/zilla_slab_regular.json', (font) => {
-      this.textGeometry = new TextGeometry(playerName, {
-        font: font,
-        size: 1.5,
-        height: 0.1
-      })
-      if (this.textGeometry) {
+      if (font) {
+        this.textGeometry = new TextGeometry(playerName, {
+          font: font,
+          size: 1.5,
+          height: 0.1
+        })
         this.textGeometry.computeBoundingBox()
 
         const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
@@ -91,29 +91,29 @@ class HealthBar {
   }
 
   updatePosition(entityPosition) {
+    const newPosition = (offset, height) => new THREE.Vector3(offset, height, 0)
     // Calculate the centerOffset for the maxHealthLine
     let maxHealthLineWidth = this.maxHealthLine.scale.x
     let maxHealthLineCenterOffset = maxHealthLineWidth / 2
 
-    // Calculate the centerOffset for the textLabel
-    this.textLabel?.geometry.computeBoundingBox()
-    let textWidth =
-      this.textLabel.geometry.boundingBox.max.x - this.textLabel.geometry.boundingBox.min.x
-    let textLabelCenterOffset = textWidth / 2
-
-    // Set the position to the entity's position plus an offset
-    this.line.position.copy(entityPosition).add(new THREE.Vector3(maxHealthLineCenterOffset, 22, 0))
-    this.maxHealthLine.position
-      .copy(entityPosition)
-      .add(new THREE.Vector3(maxHealthLineCenterOffset, 22, 0))
-    this.textLabel.position
-      .copy(entityPosition)
-      .add(new THREE.Vector3(textLabelCenterOffset, 26, 0))
+    this.line.position.copy(entityPosition).add(newPosition(maxHealthLineCenterOffset, 22))
+    this.maxHealthLine.position.copy(entityPosition).add(newPosition(maxHealthLineCenterOffset, 22))
 
     // Set the rotation to the inverse of the camera's rotation
     this.line.quaternion.copy(this.camera.quaternion).invert()
     this.maxHealthLine.quaternion.copy(this.camera.quaternion).invert()
-    this.textLabel.quaternion.copy(this.camera.quaternion).invert()
+
+    // Calculate the centerOffset for the textLabel
+    if (this.textLabel && this.textLabel.geometry) {
+      const bndBox = this.textLabel.geometry.boundingBox
+      this.textLabel.geometry.computeBoundingBox()
+      let textWidth = bndBox.max.x - bndBox.min.x
+      let textLabelCenterOffset = textWidth / 2
+      this.textLabel.position.copy(entityPosition).add(newPosition(textLabelCenterOffset, 26))
+      this.textLabel.quaternion.copy(this.camera.quaternion).invert()
+    }
+
+    
   }
 }
 
