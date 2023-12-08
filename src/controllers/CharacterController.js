@@ -221,7 +221,8 @@ export class CharacterController {
 
     this._params.socket.emit('player-moved', this._params.playerId, {
       position: this.entity.position,
-      rotation: intersects[0]?.point
+      rotation: intersects[0]?.point,
+      playerName: this._params.playerName
     })
 
     return intersects

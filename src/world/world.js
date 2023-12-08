@@ -86,11 +86,11 @@ export class World {
     })
 
     this.socket.on('current-players', (players) => {
-      players.forEach(([playerId, playerdata]) => {
+      players.forEach(([playerId, playerPosition]) => {
         this.playerHealths[playerId] = 100
         if (playerId !== this.socket.id) {
           document.getElementById('waiting_room').style.display = 'block'
-          this._LoadAnimatedModel(playerId, playerdata)
+          this._LoadAnimatedModel(playerId, playerPosition)
         }
       })
     })
