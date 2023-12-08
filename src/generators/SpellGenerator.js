@@ -77,6 +77,7 @@ export default class BallGenerator {
         const emitter = ball.nebula.emitters[0]
         emitter.removeAllParticles()
         emitter.update()
+        ball.nebula.destroy()
       }
 
       const index = this.balls.indexOf(ball)

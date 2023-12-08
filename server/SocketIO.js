@@ -84,7 +84,7 @@ class SocketIO {
       })
 
       socket.on('receive-damage', (playerId) => {
-        socket.to(socket.room).emit('receive-damage', playerId)
+        socket.to(socket.room).emit('receive-damage', playerId, this.players.get(playerId))
       })
 
       socket.on('leave-room', () => {

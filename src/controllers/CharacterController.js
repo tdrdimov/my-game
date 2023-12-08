@@ -4,9 +4,12 @@ import { CharacterFSM } from '../states/StateMachine.js'
 import { AnimationsProxy } from '../loaders/AnimationsProxy.js'
 import { CharacterLoader } from '../loaders/CharacterLoader.js'
 import * as CANNON from 'cannon-es'
+import Nebula, { SpriteRenderer } from 'three-nebula'
 import * as YUKA from 'yuka'
 import { ShootSpell } from '../generators/ShootSpell.js'
 import HealthBar from './HealthBar'
+import slash from '../generators/slash.json'
+
 export class CharacterController {
   constructor(params) {
     this.playerId = params.playerId
@@ -138,11 +141,12 @@ export class CharacterController {
       }
     })
 
-    this._params.socket.on('receive-damage', (playerId) => {
+    this._params.socket.on('receive-damage', (playerId, playerData) => {
       if (this.playerId === playerId) {
         this._params.playerHealths[playerId] -= this.damage
         this.healthBar.updateHealth(this._params.playerHealths[playerId])
         this._stateMachine.SetState('receiveDmg')
+        this.receiveDmgParticles(playerData.position)
         if (this._params.playerHealths[playerId] <= 0) {
           this._stateMachine.SetState('death')
           setTimeout(() => {
@@ -160,11 +164,34 @@ export class CharacterController {
       this._params.playerHealths[this._params.socket.id] -= this.damage
       this.healthBar.updateHealth(this._params.playerHealths[this._params.socket.id])
       this._stateMachine.SetState('receiveDmg')
+      this.receiveDmgParticles()
     }
 
     if (this._params.playerHealths[this._params.socket.id] <= 0) {
       this._stateMachine.SetState('death')
     }
+  }
+
+  receiveDmgParticles(position) {
+    const pos = position
+      ? new THREE.Vector3(position.x, position.y, position.z)
+      : this.entity.position.clone()
+
+    Nebula.fromJSONAsync(slash, THREE).then((loaded) => {
+      const nebulaRenderer = new SpriteRenderer(this._params.scene, THREE)
+      const nebula = loaded.addRenderer(nebulaRenderer)
+      const emitter = nebula.emitters[0]
+      pos.y = 15
+      // debug particles to make sure they show every time
+      emitter.position.copy(pos)
+      nebula.update()
+
+      setTimeout(() => {
+        emitter.removeAllParticles()
+        emitter.update()
+        nebula.destroy()
+      }, 200)
+    })
   }
 
   async loadCharacter() {
