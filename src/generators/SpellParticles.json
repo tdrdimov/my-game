@@ -8,10 +8,10 @@
       "life": null,
       "cache": { "totalEmitTimes": null, "life": null },
       "rate": {
-        "particlesMin": 1,
+        "particlesMin": 4,
         "particlesMax": 4,
         "perSecondMin": 0.01,
-        "perSecondMax": 0.02
+        "perSecondMax": 0.01
       },
       "position": { "x": 0, "y": 0, "z": 0 },
       "rotation": { "x": 0, "y": 0, "z": 0 },
@@ -24,7 +24,7 @@
         {
           "id": "51ca9452-3d8b-11e9-a1e8-4785d9606b75",
           "type": "Life",
-          "properties": { "min": 0.1, "max": 0.4, "isEnabled": true }
+          "properties": { "min": 0.1, "max": 0.8, "isEnabled": true }
         },
         {
           "id": "51ca9453-3d8b-11e9-a1e8-4785d9606b75",
@@ -37,7 +37,7 @@
         {
           "id": "51ca9454-3d8b-11e9-a1e8-4785d9606b75",
           "type": "Radius",
-          "properties": { "width": 10, "height": 4, "isEnabled": true }
+          "properties": { "width": 6, "height": 3, "isEnabled": true }
         },
         {
           "id": "51ca9455-3d8b-11e9-a1e8-4785d9606b75",
