@@ -45,7 +45,7 @@ export default class BallGenerator {
     Nebula.fromJSONAsync(json, THREE).then((loaded) => {
       const nebulaRenderer = new SpriteRenderer(this.scene, THREE)
       nebula = loaded.addRenderer(nebulaRenderer)
-
+      nebula.emitters[0].position.copy(mesh.position)
       const ball = { mesh, body: { ...body }, nebula, nebulaRenderer }
       this.balls.push(ball)
 

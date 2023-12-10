@@ -9,6 +9,7 @@ import * as YUKA from 'yuka'
 import { ShootSpell } from '../generators/ShootSpell.js'
 import HealthBar from './HealthBar'
 import slash from '../generators/slash.json'
+import AudioController from './AudioController.js'
 
 export class CharacterController {
   constructor(params) {
@@ -22,7 +23,7 @@ export class CharacterController {
     this._world = this._params.cannon._world
     this.raycaster = new THREE.Raycaster()
     this._animations = {}
-    this.damage = 10
+    this.damage = 20
     this.vehicle = new YUKA.Vehicle()
     this.time = new YUKA.Time()
     this.entity = new YUKA.GameEntity()
@@ -40,7 +41,8 @@ export class CharacterController {
       new AnimationsProxy(this._animations),
       this.entity,
       this.vehicle,
-      this._params.socket
+      this._params.camera,
+      this._params.scene
     )
     this.CharacterLoader = new CharacterLoader(
       this._stateMachine,
@@ -60,6 +62,10 @@ export class CharacterController {
       color: 0xffff00,
       transparent: true,
       opacity: 0.2
+    })
+    this.audioController = new AudioController({
+      camera: this._params.camera,
+      scene: this._params.scene
     })
 
     // Add event listeners for mouse click
@@ -88,7 +94,7 @@ export class CharacterController {
 
     const size = 20
     // Cannon.js body
-    const shape = new CANNON.Box(new CANNON.Vec3(3, size, 3))
+    const shape = new CANNON.Box(new CANNON.Vec3(2.5, size, 2.5))
 
     this.body = new CANNON.Body({
       mass: 1,
@@ -147,6 +153,7 @@ export class CharacterController {
         this.healthBar.updateHealth(this._params.playerHealths[playerId])
         this._stateMachine.SetState('receiveDmg')
         this.receiveDmgParticles(playerData.position)
+        this.audioController.play(this.body.position, '/sounds/Fireball.mp3', false)
         if (this._params.playerHealths[playerId] <= 0) {
           this._stateMachine.SetState('death')
           setTimeout(() => {
@@ -165,6 +172,7 @@ export class CharacterController {
       this.healthBar.updateHealth(this._params.playerHealths[this._params.socket.id])
       this._stateMachine.SetState('receiveDmg')
       this.receiveDmgParticles()
+      this.audioController.play(this.body.position, '/sounds/Fireball.mp3', false)
     }
 
     if (this._params.playerHealths[this._params.socket.id] <= 0) {
@@ -304,7 +312,6 @@ export class CharacterController {
     if (this.vehicle.velocity.length() > 0.1) {
       this._input._keys.forward = true
       this._params.socket.emit('player-moving', this._params.playerId, this.body.position)
-      // write socket logic for player moving
     } else {
       this._input._keys.forward = false
     }

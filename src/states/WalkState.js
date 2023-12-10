@@ -1,7 +1,13 @@
 import { State } from './State.js'
+import AudioController from '../controllers/AudioController.js'
+
 export class WalkState extends State {
   constructor(parent) {
     super(parent)
+    this._audioController = new AudioController({
+      camera: this._parent.camera,
+      scene: this._parent.scene
+    })
   }
 
   get Name() {
@@ -10,6 +16,7 @@ export class WalkState extends State {
 
   Enter(prevState) {
     const curAction = this._parent._proxy._animations['walk'].action
+    this._audioController.play(this._parent.vehicle.position, '/sounds/walking.mp3', true, 1.4)
     if (prevState) {
       const prevAction = this._parent._proxy._animations[prevState.Name].action
 
@@ -39,7 +46,9 @@ export class WalkState extends State {
     }
   }
 
-  Exit() {}
+  Exit() {
+    this._audioController.stop('/sounds/walking.mp3')
+  }
 
   Update(timeElapsed, input) {
     if (input._keys.forward) {

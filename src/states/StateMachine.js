@@ -9,6 +9,7 @@ export class FiniteStateMachine {
   constructor() {
     this._states = {}
     this._currentState = null
+    this.input = null
   }
 
   _AddState(name, type) {
@@ -27,10 +28,11 @@ export class FiniteStateMachine {
 
     const state = new this._states[name](this)
     this._currentState = state
-    state.Enter(prevState)
+    state.Enter(prevState, this.input)
   }
 
   Update(timeElapsed, input) {
+    this.input = input
     if (this._currentState) {
       this._currentState.Update(timeElapsed, input)
     }
@@ -38,11 +40,13 @@ export class FiniteStateMachine {
 }
 
 export class CharacterFSM extends FiniteStateMachine {
-  constructor(proxy, entity, vehicle) {
+  constructor(proxy, entity, vehicle, camera, scene) {
     super()
     this._proxy = proxy
     this.entity = entity
     this.vehicle = vehicle
+    this.camera = camera
+    this.scene = scene
     this._Init()
   }
 
