@@ -1,16 +1,12 @@
 import { State } from './State.js'
 import * as THREE from 'three'
-import AudioController from '../controllers/AudioController.js'
+// import AudioController from '../controllers/AudioController.js'
 
 export class Magic1State extends State {
   constructor(parent) {
     super(parent)
     this.prevState = null
     this.parent = parent
-    this._audioController = new AudioController({
-      camera: this._parent.camera,
-      scene: this._parent.scene
-    })
     this._FinishedCallback = () => {
       this._Finished()
     }
@@ -22,7 +18,7 @@ export class Magic1State extends State {
 
   Enter(prevState) {
     const curAction = this._parent._proxy._animations['magic1'].action
-    this._audioController.play(this._parent.vehicle.position, '/sounds/spell_cast.wav', false)
+    // this._audioController.play(this._parent.vehicle.position, '/sounds/spell_cast.wav', false)
     const mixer = curAction.getMixer()
     mixer.addEventListener('finished', this._FinishedCallback)
 
@@ -60,7 +56,7 @@ export class Magic1State extends State {
 
   _Cleanup() {
     const action = this._parent._proxy._animations['magic1'].action
-    this._audioController.stop()
+    // this._audioController.stop()
     action.getMixer().removeEventListener('finished', this._CleanupCallback)
   }
 

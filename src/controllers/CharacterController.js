@@ -9,7 +9,7 @@ import * as YUKA from 'yuka'
 import { ShootSpell } from '../generators/ShootSpell.js'
 import HealthBar from './HealthBar'
 import slash from '../generators/slash.json'
-import AudioController from './AudioController.js'
+// import AudioController from './AudioController.js'
 
 export class CharacterController {
   constructor(params) {
@@ -62,10 +62,6 @@ export class CharacterController {
       color: 0xffff00,
       transparent: true,
       opacity: 0.2
-    })
-    this.audioController = new AudioController({
-      camera: this._params.camera,
-      scene: this._params.scene
     })
 
     // Add event listeners for mouse click
@@ -153,7 +149,7 @@ export class CharacterController {
         this.healthBar.updateHealth(this._params.playerHealths[playerId])
         this._stateMachine.SetState('receiveDmg')
         this.receiveDmgParticles(playerData.position)
-        this.audioController.play(this.body.position, '/sounds/Fireball.mp3', false)
+        // this.audioController.play(this.body.position, '/sounds/Fireball.mp3', false)
         if (this._params.playerHealths[playerId] <= 0) {
           this._stateMachine.SetState('death')
           setTimeout(() => {
@@ -172,7 +168,7 @@ export class CharacterController {
       this.healthBar.updateHealth(this._params.playerHealths[this._params.socket.id])
       this._stateMachine.SetState('receiveDmg')
       this.receiveDmgParticles()
-      this.audioController.play(this.body.position, '/sounds/Fireball.mp3', false)
+      // this.audioController.play(this.body.position, '/sounds/Fireball.mp3', false)
     }
 
     if (this._params.playerHealths[this._params.socket.id] <= 0) {

@@ -1,16 +1,12 @@
 import { State } from './State.js'
 import * as THREE from 'three'
-import AudioController from '../controllers/AudioController.js'
+// import AudioController from '../controllers/AudioController.js'
 
 export class JumpState extends State {
   constructor(parent) {
     super(parent)
     this.prevState = null
     this.input = null
-    this._audioController = new AudioController({
-      camera: this._parent.camera,
-      scene: this._parent.scene
-    })
     this._FinishedCallback = () => {
       this._Finished()
     }
@@ -23,7 +19,7 @@ export class JumpState extends State {
   Enter(prevState, input) {
     this.input = input
     const curAction = this._parent._proxy._animations['jump'].action
-    this._audioController.play(this._parent.vehicle.position, '/sounds/jump.wav', false)
+    // this._audioController.play(this._parent.vehicle.position, '/sounds/jump.wav', false)
     const mixer = curAction.getMixer()
     mixer.addEventListener('finished', this._FinishedCallback)
 
@@ -67,7 +63,7 @@ export class JumpState extends State {
 
   Exit() {
     this._Cleanup()
-    this._audioController.stop('/sounds/jump.wav')
+    // this._audioController.stop('/sounds/jump.wav')
   }
 
   Update(t, input) {
