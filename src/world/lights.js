@@ -8,8 +8,8 @@ export class Lights {
   }
 
   _CreateLights() {
-    const ambient = new THREE.AmbientLight(0xe3d4fe, 2)
-    const directional = new THREE.DirectionalLight(0x333333, 1)
+    const ambient = new THREE.AmbientLight(0xe3d4fe, 3)
+    const directional = new THREE.DirectionalLight(0x333333, 2)
     directional.position.set(0, 1, 1).normalize()
     this._scene.add(ambient, directional)
   }

@@ -19,6 +19,8 @@ export class CharacterController {
   }
 
   async _Init(params) {
+    this.nebula = null
+    this.emitter = null
     this._params = params
     this._world = this._params.cannon._world
     this.raycaster = new THREE.Raycaster()
@@ -105,7 +107,7 @@ export class CharacterController {
     this.vehicle.position.set(this._params.playerPosition.position.x, 0, 0)
     this.vehicle.maxSpeed = 50
     this.vehicle.mass = 0.1
-    this.vehicle.scale.set(0.05, 0.05, 0.05)
+    this.vehicle.scale.set(0.1, 0.1, 0.1)
 
     const arriveBehavior = new YUKA.ArriveBehavior(this.entity.position)
     arriveBehavior.deceleration = 0.2
@@ -183,18 +185,20 @@ export class CharacterController {
 
     Nebula.fromJSONAsync(slash, THREE).then((loaded) => {
       const nebulaRenderer = new SpriteRenderer(this._params.scene, THREE)
-      const nebula = loaded.addRenderer(nebulaRenderer)
-      const emitter = nebula.emitters[0]
+      this.nebula = loaded.addRenderer(nebulaRenderer)
+      this.emitter = this.nebula.emitters[0]
       pos.y = 15
       // debug particles to make sure they show every time
-      emitter.position.copy(pos)
-      nebula.update()
+      this.emitter.position.copy(pos)
+      this.nebula.update()
 
       setTimeout(() => {
-        emitter.removeAllParticles()
-        emitter.update()
-        nebula.destroy()
-      }, 200)
+        this.emitter.removeAllParticles()
+        this.emitter.update()
+        this.nebula.destroy()
+        this.emitter = null
+        this.nebula = null
+      }, 300)
     })
   }
 
@@ -315,6 +319,13 @@ export class CharacterController {
     // update camera
     if (this._params.socket.id === this._params.playerId) {
       this.cameraController.Update(timeInSeconds)
+    }
+
+    if (this.nebula && this.emitter) {
+      const pos = entity.position.clone()
+      pos.y = 15
+      this.emitter.position.copy(pos);
+      this.nebula.update();
     }
 
     this.shootSpell.cast(timeInSeconds, this.body.position)

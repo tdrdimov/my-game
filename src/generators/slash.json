@@ -1,10 +1,10 @@
 {
-  "preParticles": 500,
+  "preParticles": 400,
   "integrationType": "EULER",
   "emitters": [
     {
       "id": "e772d550-957c-11ee-8105-8f3beaa3421f",
-      "totalEmitTimes": 3,
+      "totalEmitTimes": 1,
       "life": 1,
       "cache": {
         "totalEmitTimes": 0,
@@ -41,7 +41,7 @@
           "id": "e772d552-957c-11ee-8105-8f3beaa3421f",
           "type": "Life",
           "properties": {
-            "min": 1,
+            "min": 0.1,
             "max": 1,
             "isEnabled": true,
             "center": true
@@ -59,8 +59,8 @@
           "id": "e772d554-957c-11ee-8105-8f3beaa3421f",
           "type": "Radius",
           "properties": {
-            "width": 8,
-            "height": 4,
+            "width": 10,
+            "height": 6,
             "isEnabled": true,
             "center": true
           }

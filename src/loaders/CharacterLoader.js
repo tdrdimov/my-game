@@ -19,7 +19,7 @@ export class CharacterLoader {
   async loadModels() {
     return new Promise((resolve, reject) => {
       this.loader.setPath(this.modelsPath)
-      this.loader.load('mage-girl.fbx', (fbx) => {
+      this.loader.load('wizTRig.fbx', (fbx) => {
         fbx.name = 'character'
         fbx.traverse((c) => {
           c.castShadow = true
