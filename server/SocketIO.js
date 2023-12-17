@@ -87,6 +87,10 @@ class SocketIO {
         socket.to(socket.room).emit('receive-damage', playerId, this.players.get(playerId))
       })
 
+      socket.on('end-game', (playerData) => {
+        socket.to(socket.room).emit('end-game', playerData)
+      })
+
       socket.on('leave-room', () => {
         this.roomManager.leaveRoom(socket)
         this.players.delete(socket.id)

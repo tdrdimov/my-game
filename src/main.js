@@ -18,3 +18,20 @@ window.addEventListener('DOMContentLoaded', () => {
     _SOCKET = new SocketClient(scene, cannonWorld)
     _APP = new World(_SOCKET.getSocket(), scene, cannonWorld)
 })
+
+const createui = document.getElementById('create_game_ui')
+const joinui = document.getElementById('join_game_ui')
+
+document.getElementById('check_join').addEventListener('click', (event) => {
+    event.preventDefault()
+    joinui.style.display = 'block'
+    createui.style.display = 'none'
+    event.target.parentNode.style.display = 'none'
+})
+
+document.getElementById('check_create').addEventListener('click', (event) => {
+    event.preventDefault()
+    createui.style.display = 'block'
+    joinui.style.display = 'none'
+    event.target.parentNode.style.display = 'none'
+})

@@ -155,7 +155,10 @@ export class CharacterController {
         if (this._params.playerHealths[playerId] <= 0) {
           this._stateMachine.SetState('death')
           setTimeout(() => {
-            console.log('You Win!')
+            this._params.socket.emit('end-game', {
+              loser: playerId,
+              winner: this._params.socket.id
+            })
           }, 2000)
         }
       }
@@ -175,6 +178,10 @@ export class CharacterController {
 
     if (this._params.playerHealths[this._params.socket.id] <= 0) {
       this._stateMachine.SetState('death')
+      this._params.socket.emit('end-game', {
+        loser: this._params.socket.id,
+        winner: body.id
+      })
     }
   }
 
@@ -198,7 +205,7 @@ export class CharacterController {
         this.nebula.destroy()
         this.emitter = null
         this.nebula = null
-      }, 300)
+      }, 500)
     })
   }
 
@@ -324,8 +331,8 @@ export class CharacterController {
     if (this.nebula && this.emitter) {
       const pos = entity.position.clone()
       pos.y = 15
-      this.emitter.position.copy(pos);
-      this.nebula.update();
+      this.emitter.position.copy(pos)
+      this.nebula.update()
     }
 
     this.shootSpell.cast(timeInSeconds, this.body.position)

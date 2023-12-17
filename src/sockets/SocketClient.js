@@ -22,7 +22,7 @@ export default class SocketClient {
     this.socket.on('connect', () => {
       document.getElementById('create_game').addEventListener('click', () => {
         const room = document.querySelector('input[name="create game"]').value
-        const playerName = document.querySelector('input[name="player name"]').value
+        const playerName = document.getElementById('player_name_create').value
         if (room) {
           this.socket.emit('create-room', room, playerName)
         }
@@ -30,7 +30,7 @@ export default class SocketClient {
       
       document.getElementById('join_game').addEventListener('click', () => {
         const room = document.querySelector('input[name="join game"]').value
-        const playerName = document.querySelector('input[name="player name"]').value
+        const playerName = document.getElementById('player_name_join').value
         if (room) {
           this.socket.emit('join-room', room, playerName)
         }

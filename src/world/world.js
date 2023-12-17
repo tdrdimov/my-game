@@ -89,7 +89,7 @@ export class World {
       players.forEach(([playerId, playerPosition]) => {
         this.playerHealths[playerId] = 100
         if (playerId !== this.socket.id) {
-          document.getElementById('waiting_room').style.display = 'block'
+          document.getElementById('waiting_room').style.display = 'flex'
           this._LoadAnimatedModel(playerId, playerPosition)
         }
       })
@@ -117,6 +117,12 @@ export class World {
       this.isUiVisible = false
     })
 
+    this.socket.on('end-game', (playerData) => {
+      const winner = this.players.get(playerData.winner)
+      document.getElementById('end_game').style.display = 'block'
+      document.getElementById('end_game_winner').innerHTML = `${winner.name} Wins!`
+    })
+
     this._RAF()
   }
 
@@ -135,6 +141,7 @@ export class World {
       }
 
       const player = new CharacterController(params)
+      player.name = playerData.playerName
       this.players.set(playerId, player)
     }
   }
