@@ -42,6 +42,18 @@ export default class CharacterControllerInput {
           if (!event.repeat && !this.isJumping) {
             this._keys.space = true
             this.isJumping = true
+
+            let cooldown = 800
+            this.updateCooldownUI('jump', cooldown)
+            const intervalId = setInterval(() => {
+              cooldown -= 100
+              this.updateCooldownUI('jump', cooldown)
+              if (cooldown <= 0) {
+                clearInterval(intervalId)
+                this.isJumping = false
+              }
+            }, 100)
+
             setTimeout(() => {
               this.isJumping = false
             }, 800)
@@ -63,6 +75,18 @@ export default class CharacterControllerInput {
           if (event.timeStamp - this.lastQKeyPressTimestamp > this.timeInterval && !event.repeat) {
             this._keys.magic1 = true
             this.isShooting = true
+
+            let cooldown = 1600
+            this.updateCooldownUI('fire', cooldown)
+            const intervalId = setInterval(() => {
+              cooldown -= 100
+              this.updateCooldownUI('fire', cooldown)
+              if (cooldown <= 0) {
+                clearInterval(intervalId)
+                this.isShooting = false
+              }
+            }, 100)
+
             setTimeout(() => {
               this.isShooting = false
               this._keys.magic1 = false
@@ -89,5 +113,21 @@ export default class CharacterControllerInput {
         this._keys.shift = false
         break
     }
+  }
+
+  updateCooldownUI(skill, cooldown) {
+    const button = document.getElementById(`${skill}-button`)
+    if (button) {
+      button.classList.add('isLoading')
+    }
+    const element = document.getElementById(`${skill}-cooldown`)
+    if (element) {
+      element.innerText = `${cooldown / 1000}s`
+    }
+
+    setTimeout(() => {
+      button.classList.remove('isLoading')
+      element.innerText = ''
+    }, cooldown)
   }
 }

@@ -89,3 +89,79 @@ body
     border-radius: 8px;
     color: #000;
 }
+
+#spell_bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 300px;
+    margin: auto;
+    position: fixed;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+}
+
+#spell_bar button {
+    width: 50px;
+    height: 50px;
+    margin: 0 10px;
+    padding: 7px;
+    cursor: default;
+    border-radius: 50%;
+    background-color: #4f3e3e;
+    position: relative;
+    user-select: none;
+}
+
+#spell_bar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+}
+
+#spell_bar button::after {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    bottom: -5px;
+    right: -5px;
+    border-radius: 50%;
+    background-color: rgb(117, 117, 117);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#spell_bar button:nth-child(1)::after {
+    content: 'Q';
+}
+
+#spell_bar button:nth-child(2)::after {
+    content: '␣';
+}
+
+#spell_bar button.isLoading::before {
+    background-color: #0000008f;
+    content: '';
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+}
+
+#spell_bar button.isLoading span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    user-select: none;
+    font-weight: 700;
+    font-size: 16px;
+}
