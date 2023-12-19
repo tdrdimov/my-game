@@ -19,7 +19,8 @@ export class CharacterLoader {
   async loadModels() {
     return new Promise((resolve, reject) => {
       this.loader.setPath(this.modelsPath)
-      this.loader.load('wizTRig.fbx', (fbx) => {
+      const wizardModel = this._params.wizardColor === 'wizTRigRed' ? 'wizTRig' : 'wizTRigRed'
+      this.loader.load(`${this._params.wizardColor ? this._params.wizardColor : wizardModel}.fbx`, (fbx) => {
         fbx.name = 'character'
         fbx.traverse((c) => {
           c.castShadow = true

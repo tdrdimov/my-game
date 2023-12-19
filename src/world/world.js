@@ -137,7 +137,8 @@ export class World {
         socket: this.socket,
         playerHealths: this.playerHealths,
         playerPosition: playerData,
-        playerName: playerData.playerName
+        playerName: playerData.playerName,
+        wizardColor: playerData.wizardColor
       }
 
       const player = new CharacterController(params)

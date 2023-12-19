@@ -10,19 +10,22 @@ class SocketIO {
 
   addPlayerToRoom(socket, roomName, playerName) {
     if (this.roomManager.joinRoom(socket, roomName)) {
-      let playerPosition
+      let playerPosition, wizardColor
       if (this.players.size === 0) {
         playerPosition = -50 // Position for the first player
+        wizardColor = 'wizTRigRed'
         socket.emit('waiting-for-second-player') // Emit the waiting event to the first player
       } else if (this.players.size === 1) {
         playerPosition = 50 // Position for the second player
+        wizardColor = 'wizTRig'
         setTimeout(() => {
           this.io.to(roomName).emit('start-game') // Emit the start event to both players after a delay
         }, 3000)
       }
       const playerData = {
         position: { x: playerPosition, y: 0, z: 0 },
-        playerName: playerName
+        playerName: playerName,
+        wizardColor
       }
       if (!this.players.has(socket.id) && playerName) {
         this.players.set(socket.id, playerData)
