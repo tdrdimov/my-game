@@ -24,6 +24,11 @@ export class World {
   _Initialize() {
     this._previousRAF = null
     this._camera = new Camera().camera
+    this._camera.position.set(0, 120, -120);
+  
+    // Make the camera look at the center of the scene
+    this._camera.lookAt(new THREE.Vector3(0, -80, 0));
+    this._scene.add(this._camera)
     this.canvas = new Canvas(this._camera)
     new Lights(this._scene)
     this.sky = new Sky(this._scene)
@@ -89,7 +94,7 @@ export class World {
       players.forEach(([playerId, playerPosition]) => {
         this.playerHealths[playerId] = 100
         if (playerId !== this.socket.id) {
-          document.getElementById('waiting_room').style.display = 'block'
+          document.getElementById('waiting_room').style.display = 'flex'
           this._LoadAnimatedModel(playerId, playerPosition)
         }
       })
@@ -108,19 +113,21 @@ export class World {
     })
 
     this.socket.on('waiting-for-second-player', () => {
-      document.getElementById('waiting_room').style.display = 'block'
+      document.getElementById('waiting_room').style.display = 'flex'
       this.isUiVisible = true
     })
 
     this.socket.on('start-game', () => {
       document.getElementById('waiting_room').style.display = 'none'
       this.isUiVisible = false
+      document.getElementById('spell_bar').style.display = 'flex'
     })
 
     this.socket.on('end-game', (playerData) => {
       const winner = this.players.get(playerData.winner)
-      document.getElementById('end_game').style.display = 'block'
+      document.getElementById('end_game').style.display = 'flex'
       document.getElementById('end_game_winner').innerHTML = `${winner.name} Wins!`
+      document.getElementById('app').style.userSelect = 'none'
     })
 
     this._RAF()

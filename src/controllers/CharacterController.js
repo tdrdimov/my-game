@@ -37,7 +37,7 @@ export class CharacterController {
       this._params.camera,
       this._params.playerName
     )
-    this._input = new CharacterControllerInput(this._params.socket, this._params.playerId)
+    this._input = new CharacterControllerInput(this._params.socket, this._params.playerId, this._params.playerHealths)
     this.entityManager = new YUKA.EntityManager()
     this._stateMachine = new CharacterFSM(
       new AnimationsProxy(this._animations),
@@ -149,18 +149,13 @@ export class CharacterController {
       if (this.playerId === playerId) {
         this._params.playerHealths[playerId] -= this.damage
         this.healthBar.updateHealth(this._params.playerHealths[playerId])
-        this._stateMachine.SetState('receiveDmg')
         this.receiveDmgParticles(playerData.position)
         // this.audioController.play(this.body.position, '/sounds/Fireball.mp3', false)
+
         if (this._params.playerHealths[playerId] <= 0) {
           this._stateMachine.SetState('death')
-          setTimeout(() => {
-            this._params.socket.emit('end-game', {
-              loser: playerId,
-              winner: this._params.socket.id
-            })
-          }, 2000)
         }
+        this.announceWinner()
       }
     })
   }
@@ -171,18 +166,14 @@ export class CharacterController {
       this._params.socket.emit('receive-damage', this._params.socket.id)
       this._params.playerHealths[this._params.socket.id] -= this.damage
       this.healthBar.updateHealth(this._params.playerHealths[this._params.socket.id])
-      this._stateMachine.SetState('receiveDmg')
       this.receiveDmgParticles()
       // this.audioController.play(this.body.position, '/sounds/Fireball.mp3', false)
     }
 
     if (this._params.playerHealths[this._params.socket.id] <= 0) {
       this._stateMachine.SetState('death')
-      this._params.socket.emit('end-game', {
-        loser: this._params.socket.id,
-        winner: body.id
-      })
     }
+    this.announceWinner()
   }
 
   receiveDmgParticles(position) {
@@ -198,15 +189,29 @@ export class CharacterController {
       // debug particles to make sure they show every time
       this.emitter.position.copy(pos)
       this.nebula.update()
-
-      setTimeout(() => {
-        this.emitter.removeAllParticles()
-        this.emitter.update()
-        this.nebula.destroy()
-        this.emitter = null
-        this.nebula = null
-      }, 500)
     })
+  }
+
+  announceWinner() {
+    let loserId = null
+    let winnerId = null
+
+    Object.entries(this._params.playerHealths).forEach(([key, value]) => {
+      if (value === 0) {
+        loserId = key
+      } else if (value > 0) {
+        winnerId = key
+      }
+    })
+
+    if (loserId) {
+      setTimeout(() => {
+        this._params.socket.emit('end-game', {
+          loser: loserId,
+          winner: winnerId
+        })
+      }, 3000)
+    }
   }
 
   async loadCharacter() {
@@ -245,10 +250,11 @@ export class CharacterController {
   }
 
   mouseIntersects(event) {
+    const isPlayerDead = Object.values(this._params.playerHealths).some(value => typeof value === 'number' && value <= 0)
     if (
       !this._target ||
       this._params.socket.id !== this._params.playerId ||
-      this._params.playerHealths[this._params.playerId] <= 0
+      isPlayerDead
     ) {
       return
     }

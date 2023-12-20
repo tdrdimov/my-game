@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=GFS+Didot&family=MedievalSharp&display=swap');
+
 *
 {
     margin: 0;
@@ -8,6 +10,34 @@ html,
 body
 {
     margin: 0;
+    font-family: 'GFS Didot', serif;
+    font-family: 'MedievalSharp', cursive;
+}
+
+button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: 4px solid #7f523d;
+    background-color: #ae7b5a;
+    color: #fff;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button:hover {
+    background-color: #7f523d;
+    color: #fff;
+}
+
+input {
+    padding: 10px;
+    font-size: 16px;
+    border: 4px solid #7f523d;
+    border-radius: 5px;
 }
 
 .d-flex {
@@ -30,13 +60,16 @@ body
     width: 100%;
     height: 100%;
     color: #fff;
-    background-color: #000;
+    background-color: #101217a6;
     overflow: hidden;
     opacity: 1;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 #waiting_room, #end_game {
@@ -44,7 +77,6 @@ body
     width: 100%;
     height: 100%;
     color: #fff;
-    background-color: #000;
     overflow: hidden;
     opacity: 1;
     position: fixed;
@@ -52,32 +84,41 @@ body
     left: 0;
     z-index: 9999;
     text-align: center;
-    padding-top: 100px;
     background-color: #101217;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#end_game {
+    background-color: #101217a6;
 }
 
 .main_title {
     font-weight: 700;
     text-align: center;
     font-size: 3rem;
-    margin-top: 50px;
     margin-bottom: 30px;
 }
 
 #check_join, #check_create {
+    font-size: 34px;
     width: 250px;
-    height: 250px;
+    height: 150px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    font-size: 32px;
-    font-weight: 700;
-    cursor: pointer;
-    border: 0;
+    background-color: rgba(240, 255, 255, 0.6);
     border-radius: 8px;
-    background-color: azure;
-    margin: 30px;
+    border: 6px solid #7f523d;
+    background-color: #ae7b5a;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+    font-family: 'GFS Didot', serif;
+    font-family: 'MedievalSharp', cursive;
+    margin: 0 20px;
 }
 #join_game_ui, #create_game_ui {
     display: none;
@@ -85,13 +126,17 @@ body
     width: 100%;
     max-width: 300px;
     margin: auto;
-    padding: 40px 20px;
+    padding: 40px;
     border-radius: 8px;
-    color: #000;
+    border: 6px solid #7f523d;
+    background-color: #ae7b5a;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
 }
 
 #spell_bar {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     width: 100%;
@@ -164,4 +209,9 @@ body
     user-select: none;
     font-weight: 700;
     font-size: 16px;
+}
+
+#end_game_winner {
+    font-size: 2rem;
+    margin: 20px 0;
 }

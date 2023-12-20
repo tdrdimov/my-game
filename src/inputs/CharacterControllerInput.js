@@ -1,7 +1,8 @@
 export default class CharacterControllerInput {
-  constructor(socket, playerId) {
+  constructor(socket, playerId, playerHealths) {
     this._socket = socket
     this._playerId = playerId
+    this.playerHealths = playerHealths
     this.isShooting = false
     this.isJumping = false
     this._Init()
@@ -24,6 +25,8 @@ export default class CharacterControllerInput {
   }
 
   _onKeyDown(event) {
+    const isPlayerDead = Object.values(this.playerHealths).some(value => typeof value === 'number' && value <= 0)
+    if (isPlayerDead) return
     switch (event.keyCode) {
       case 81: // q
         this._keys.magic1 = false
@@ -69,6 +72,8 @@ export default class CharacterControllerInput {
   }
 
   _onKeyUp(event) {
+    const isPlayerDead = Object.values(this.playerHealths).some(value => typeof value === 'number' && value <= 0)
+    if (isPlayerDead) return
     switch (event.keyCode) {
       case 81: // q
         if (this._socket.id === this._playerId && !this.isJumping) {

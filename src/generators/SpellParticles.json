@@ -1,5 +1,5 @@
 {
-  "preParticles": 300,
+  "preParticles": 100,
   "integrationType": "EULER",
   "emitters": [
     {
