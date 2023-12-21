@@ -48,6 +48,10 @@ class RoomManager {
     }
     return null
   }
+
+  removeRoom(roomName) {
+    this.rooms.delete(roomName)
+  }
 }
 
 module.exports = RoomManager

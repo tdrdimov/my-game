@@ -130,6 +130,17 @@ export class World {
       document.getElementById('app').style.userSelect = 'none'
     })
 
+    document.getElementById('restart_game').addEventListener('click', (event) => {
+      event.preventDefault()
+      const queryString = window.location.search
+      const urlParams = new URLSearchParams(queryString)
+      const player = this.players.get(this.socket.id)
+      const room = urlParams.get('room')
+      localStorage.setItem('playerName', player.name)
+      localStorage.setItem('room', room)
+      location.reload()
+  })
+
     this._RAF()
   }
 
