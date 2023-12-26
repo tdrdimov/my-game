@@ -9,7 +9,6 @@ import * as YUKA from 'yuka'
 import { ShootSpell } from '../generators/ShootSpell.js'
 import HealthBar from './HealthBar'
 import slash from '../generators/slash.json'
-// import AudioController from './AudioController.js'
 
 export class CharacterController {
   constructor(params) {
@@ -37,14 +36,20 @@ export class CharacterController {
       this._params.camera,
       this._params.playerName
     )
-    this._input = new CharacterControllerInput(this._params.socket, this._params.playerId, this._params.playerHealths)
+    this._input = new CharacterControllerInput(
+      this._params.socket,
+      this._params.playerId,
+      this._params.playerHealths,
+      this._params.audioController
+    )
     this.entityManager = new YUKA.EntityManager()
     this._stateMachine = new CharacterFSM(
       new AnimationsProxy(this._animations),
       this.entity,
       this.vehicle,
       this._params.camera,
-      this._params.scene
+      this._params.scene,
+      this._params.audioController,
     )
     this.CharacterLoader = new CharacterLoader(
       this._stateMachine,
@@ -135,6 +140,7 @@ export class CharacterController {
     this._params.socket.on('shoot-spell', (playerId, spellInfo) => {
       if (this.playerId === playerId) {
         this._stateMachine.SetState('magic1')
+        this._params.audioController.stop('/sounds/walking.mp3')
       }
     })
 
@@ -142,6 +148,7 @@ export class CharacterController {
       // Start the jump animation
       if (this.playerId === playerId) {
         this._stateMachine.SetState('jump')
+        this._params.audioController.stop('/sounds/walking.mp3')
       }
     })
 
@@ -150,7 +157,7 @@ export class CharacterController {
         this._params.playerHealths[playerId] -= this.damage
         this.healthBar.updateHealth(this._params.playerHealths[playerId])
         this.receiveDmgParticles(playerData.position)
-        // this.audioController.play(this.body.position, '/sounds/Fireball.mp3', false)
+        this._params.audioController.play(this.body.position, '/sounds/Fireball.mp3', false)
 
         if (this._params.playerHealths[playerId] <= 0) {
           this._stateMachine.SetState('death')
@@ -167,7 +174,7 @@ export class CharacterController {
       this._params.playerHealths[this._params.socket.id] -= this.damage
       this.healthBar.updateHealth(this._params.playerHealths[this._params.socket.id])
       this.receiveDmgParticles()
-      // this.audioController.play(this.body.position, '/sounds/Fireball.mp3', false)
+      this._params.audioController.play(this.body.position, '/sounds/Fireball.mp3', false)
     }
 
     if (this._params.playerHealths[this._params.socket.id] <= 0) {
@@ -250,12 +257,10 @@ export class CharacterController {
   }
 
   mouseIntersects(event) {
-    const isPlayerDead = Object.values(this._params.playerHealths).some(value => typeof value === 'number' && value <= 0)
-    if (
-      !this._target ||
-      this._params.socket.id !== this._params.playerId ||
-      isPlayerDead
-    ) {
+    const isPlayerDead = Object.values(this._params.playerHealths).some(
+      (value) => typeof value === 'number' && value <= 0
+    )
+    if (!this._target || this._params.socket.id !== this._params.playerId || isPlayerDead) {
       return
     }
 
@@ -307,6 +312,7 @@ export class CharacterController {
     if (this._input._keys.space) {
       this.vehicle.maxSpeed = 100
       this._params.socket.emit('player-jump', this._params.playerId)
+      this._params.audioController.stop('/sounds/walking.mp3')
     } else {
       this.vehicle.maxSpeed = 50
     }

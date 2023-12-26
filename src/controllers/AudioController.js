@@ -55,4 +55,9 @@ export default class AudioController {
       AudioController.sounds.splice(index, 1)
     }
   }
+
+  isPlaying(name) {
+    const sound = AudioController.sounds.find((sound) => sound.name === name);
+    return sound ? sound.isPlaying : false;
+  }
 }

@@ -40,13 +40,14 @@ export class FiniteStateMachine {
 }
 
 export class CharacterFSM extends FiniteStateMachine {
-  constructor(proxy, entity, vehicle, camera, scene) {
+  constructor(proxy, entity, vehicle, camera, scene, audioController) {
     super()
     this._proxy = proxy
     this.entity = entity
     this.vehicle = vehicle
     this.camera = camera
     this.scene = scene
+    this.audioController = audioController
     this._Init()
   }
 

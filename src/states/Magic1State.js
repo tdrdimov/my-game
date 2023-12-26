@@ -1,6 +1,5 @@
 import { State } from './State.js'
 import * as THREE from 'three'
-// import AudioController from '../controllers/AudioController.js'
 
 export class Magic1State extends State {
   constructor(parent) {
@@ -18,10 +17,10 @@ export class Magic1State extends State {
 
   Enter(prevState) {
     const curAction = this._parent._proxy._animations['magic1'].action
-    // this._audioController.play(this._parent.vehicle.position, '/sounds/spell_cast.wav', false)
     const mixer = curAction.getMixer()
     mixer.addEventListener('finished', this._FinishedCallback)
-
+    this._parent.audioController.stop('/sounds/jump.wav')
+    this._parent.audioController.stop('/sounds/walking.mp3')
     if (prevState) {
       this.prevState = prevState
       const prevAction = this._parent._proxy._animations[prevState.Name].action
@@ -31,7 +30,8 @@ export class Magic1State extends State {
       curAction.clampWhenFinished = true
       curAction.crossFadeFrom(prevAction, 0.2, true)
       curAction.play()
-
+      
+      this._parent.audioController.play(this._parent.vehicle.position, '/sounds/spell_cast.wav', false)
       // Use opacity (a custom property) for fade-in/fade-out
       prevAction.crossFadeTo(curAction, 0.2, true)
       prevAction.enabled = true
@@ -56,7 +56,7 @@ export class Magic1State extends State {
 
   _Cleanup() {
     const action = this._parent._proxy._animations['magic1'].action
-    // this._audioController.stop()
+    this._parent.audioController.stop('/sounds/spell_cast.wav')
     action.getMixer().removeEventListener('finished', this._CleanupCallback)
   }
 
@@ -82,7 +82,8 @@ export class Magic1State extends State {
     }
     if (timeElapsed) {
       const vehicle = this.parent.vehicle
-      this.parent.entity.position.copy(vehicle.position)
+      this._parent.entity.position.copy(vehicle.position)
+      this._parent.audioController.stop('/sounds/walking.mp3')
       // slow down vehicle speed to almost stop while shooting
       const slowdownFactor = 0 // Adjust as needed
       vehicle.velocity.multiplyScalar(slowdownFactor)

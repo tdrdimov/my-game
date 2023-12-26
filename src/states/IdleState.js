@@ -11,6 +11,8 @@ export class IdleState extends State {
 
   Enter(prevState) {
     const idleAction = this._parent._proxy._animations['idle'].action
+    this._parent.audioController.stop('/sounds/walking.mp3')
+    this._parent.audioController.stop('/sounds/jump.wav')
     if (prevState) {
       const prevAction = this._parent._proxy._animations[prevState.Name].action
       idleAction.time = 0.0

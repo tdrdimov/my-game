@@ -13,6 +13,7 @@ export class IdleWaitState extends State {
 
   Enter(prevState) {
     const idleAction = this._parent._proxy._animations['idleWait']?.action
+    this._parent.audioController.stop('/sounds/walking.mp3')
     if (prevState) {
       const prevAction = this._parent._proxy._animations[prevState.Name].action
       idleAction.time = 0.0
@@ -40,8 +41,6 @@ export class IdleWaitState extends State {
 
     if (input._keys.forward) {
       this._parent.SetState('walk');
-    } else if (!input._keys.forward && input._keys.backward) {
-      this._parent.SetState('walk_back');
     } else if (input._keys.space) {
       this._parent.SetState('jump')
     } else if (input._keys.magic1) {

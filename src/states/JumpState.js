@@ -1,6 +1,5 @@
 import { State } from './State.js'
 import * as THREE from 'three'
-// import AudioController from '../controllers/AudioController.js'
 
 export class JumpState extends State {
   constructor(parent) {
@@ -19,10 +18,11 @@ export class JumpState extends State {
   Enter(prevState, input) {
     this.input = input
     const curAction = this._parent._proxy._animations['jump'].action
-    // this._audioController.play(this._parent.vehicle.position, '/sounds/jump.wav', false)
+    
     const mixer = curAction.getMixer()
     mixer.addEventListener('finished', this._FinishedCallback)
-
+    this._parent.audioController.stop('/sounds/walking.mp3')
+    this._parent.audioController.stop('/sounds/spell_cast.wav')
     if (prevState) {
       this.prevState = prevState
       const prevAction = this._parent._proxy._animations[prevState.Name].action
@@ -32,7 +32,7 @@ export class JumpState extends State {
       curAction.clampWhenFinished = true
       curAction.crossFadeFrom(prevAction, 0.2, true)
       curAction.play()
-
+      this._parent.audioController.play(this._parent.vehicle.position, '/sounds/jump.wav', false)
       // Use opacity (a custom property) for fade-in/fade-out
       prevAction.crossFadeTo(curAction, 0.2, true)
       prevAction.enabled = true
@@ -63,7 +63,7 @@ export class JumpState extends State {
 
   Exit() {
     this._Cleanup()
-    // this._audioController.stop('/sounds/jump.wav')
+    this._parent.audioController.stop('/sounds/jump.wav')
   }
 
   Update(t, input) {

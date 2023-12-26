@@ -11,7 +11,7 @@ export class WalkState extends State {
 
   Enter(prevState) {
     const curAction = this._parent._proxy._animations['walk'].action
-    // this._audioController.play(this._parent.vehicle.position, '/sounds/walking.mp3', true, 1.4)
+    
     if (prevState) {
       const prevAction = this._parent._proxy._animations[prevState.Name].action
 
@@ -23,7 +23,10 @@ export class WalkState extends State {
 
       curAction.crossFadeFrom(prevAction, 0.5, true)
       curAction.play()
-
+      
+      if (!this._parent.audioController.isPlaying('/sounds/walking.mp3')) {
+        this._parent.audioController.play(this._parent.vehicle.position, '/sounds/walking.mp3', true, 1.4)
+      }
       // Use opacity (a custom property) for fade-in/fade-out
       prevAction.crossFadeTo(curAction, 0.2, true)
       prevAction.enabled = true
@@ -42,19 +45,21 @@ export class WalkState extends State {
   }
 
   Exit() {
-    // this._audioController.stop('/sounds/walking.mp3')
+    this._parent.audioController.stop('/sounds/walking.mp3')
   }
 
   Update(timeElapsed, input) {
     if (input._keys.forward) {
       if (input._keys.space) {
+        this._parent.audioController.stop('/sounds/walking.mp3')
         this._parent.SetState('jump')
       } else if (input._keys.magic1) {
+        this._parent.audioController.stop('/sounds/walking.mp3')
         this._parent.SetState('magic1')
       }
       return
     }
-
+    this._parent.audioController.stop('/sounds/walking.mp3')
     this._parent.SetState('idle')
   }
 }

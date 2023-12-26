@@ -18,7 +18,8 @@ export class DeathState extends State {
     const curAction = this._parent._proxy._animations['death'].action
     const mixer = curAction.getMixer()
     mixer.addEventListener('finished', this._FinishedCallback)
-
+    this._parent.audioController.stop('/sounds/jump.wav')
+    this._parent.audioController.stop('/sounds/walking.mp3')
     if (prevState) {
       this.prevState = prevState
       const prevAction = this._parent._proxy._animations[prevState.Name].action

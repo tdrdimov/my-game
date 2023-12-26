@@ -9,6 +9,7 @@ import { Walls } from './walls'
 import { Torch } from './torch'
 import { Sky } from './sky'
 import { Fence } from './fence'
+import AudioController from '../controllers/AudioController'
 
 export class World {
   constructor(socket, scene, world) {
@@ -24,10 +25,13 @@ export class World {
   _Initialize() {
     this._previousRAF = null
     this._camera = new Camera().camera
-    this._camera.position.set(0, 120, -120);
-  
+    this._camera.position.set(0, 120, -120)
+    this.audioController = new AudioController({
+      camera: this._camera,
+      scene: this._scene
+    })
     // Make the camera look at the center of the scene
-    this._camera.lookAt(new THREE.Vector3(0, -80, 0));
+    this._camera.lookAt(new THREE.Vector3(0, -80, 0))
     this._scene.add(this._camera)
     this.canvas = new Canvas(this._camera)
     new Lights(this._scene)
@@ -156,7 +160,8 @@ export class World {
         playerHealths: this.playerHealths,
         playerPosition: playerData,
         playerName: playerData.playerName,
-        wizardColor: playerData.wizardColor
+        wizardColor: playerData.wizardColor,
+        audioController: this.audioController
       }
 
       const player = new CharacterController(params)
