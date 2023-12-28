@@ -20,7 +20,6 @@ export class Magic1State extends State {
     const mixer = curAction.getMixer()
     mixer.addEventListener('finished', this._FinishedCallback)
     this._parent.audioController.stop('/sounds/jump.wav')
-    this._parent.audioController.stop('/sounds/walking.mp3')
     if (prevState) {
       this.prevState = prevState
       const prevAction = this._parent._proxy._animations[prevState.Name].action
@@ -83,7 +82,6 @@ export class Magic1State extends State {
     if (timeElapsed) {
       const vehicle = this.parent.vehicle
       this._parent.entity.position.copy(vehicle.position)
-      this._parent.audioController.stop('/sounds/walking.mp3')
       // slow down vehicle speed to almost stop while shooting
       const slowdownFactor = 0 // Adjust as needed
       vehicle.velocity.multiplyScalar(slowdownFactor)

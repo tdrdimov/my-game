@@ -24,7 +24,7 @@
         {
           "id": "51ca9452-3d8b-11e9-a1e8-4785d9606b75",
           "type": "Life",
-          "properties": { "min": 0.1, "max": 0.7, "isEnabled": true }
+          "properties": { "min": 0.1, "max": 0.4, "isEnabled": true }
         },
         {
           "id": "51ca9453-3d8b-11e9-a1e8-4785d9606b75",

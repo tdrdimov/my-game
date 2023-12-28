@@ -21,7 +21,6 @@ export class JumpState extends State {
     
     const mixer = curAction.getMixer()
     mixer.addEventListener('finished', this._FinishedCallback)
-    this._parent.audioController.stop('/sounds/walking.mp3')
     this._parent.audioController.stop('/sounds/spell_cast.wav')
     if (prevState) {
       this.prevState = prevState
@@ -53,7 +52,7 @@ export class JumpState extends State {
   _Finished() {
     this._Cleanup()
     // this._parent.SetState(this.prevState.Name)
-    this._parent.SetState('idle')
+    this._parent.SetState('walk')
   }
 
   _Cleanup() {

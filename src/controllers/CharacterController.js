@@ -140,7 +140,6 @@ export class CharacterController {
     this._params.socket.on('shoot-spell', (playerId, spellInfo) => {
       if (this.playerId === playerId) {
         this._stateMachine.SetState('magic1')
-        this._params.audioController.stop('/sounds/walking.mp3')
       }
     })
 
@@ -148,7 +147,6 @@ export class CharacterController {
       // Start the jump animation
       if (this.playerId === playerId) {
         this._stateMachine.SetState('jump')
-        this._params.audioController.stop('/sounds/walking.mp3')
       }
     })
 
@@ -311,8 +309,8 @@ export class CharacterController {
     this.healthBar.updateHealth(this._params.playerHealths[this.playerId])
     if (this._input._keys.space) {
       this.vehicle.maxSpeed = 100
+      this._stateMachine.SetState('jump')
       this._params.socket.emit('player-jump', this._params.playerId)
-      this._params.audioController.stop('/sounds/walking.mp3')
     } else {
       this.vehicle.maxSpeed = 50
     }

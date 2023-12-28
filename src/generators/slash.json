@@ -4,7 +4,7 @@
   "emitters": [
     {
       "id": "e772d550-957c-11ee-8105-8f3beaa3421f",
-      "totalEmitTimes": 1.5,
+      "totalEmitTimes": 3,
       "life": 0.3,
       "cache": {
         "totalEmitTimes": 0,
@@ -42,7 +42,7 @@
           "type": "Life",
           "properties": {
             "min": 0.1,
-            "max": 0.2,
+            "max": 1.2,
             "isEnabled": true,
             "center": true
           }
